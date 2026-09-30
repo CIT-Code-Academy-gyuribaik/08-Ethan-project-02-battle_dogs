@@ -1,0 +1,2499 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>멍멍 특공대 vs 냥이 침공</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jua&family=Lilita+One&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ol: 2px 2px 0 #111, -2px 2px 0 #111, 2px -2px 0 #111, -2px -2px 0 #111, 0 2px 0 #111, 2px 0 0 #111, 0 -2px 0 #111, -2px 0 0 #111, 0 4px 0 #111;
+    --ol-thin: 1px 1px 0 #111, -1px 1px 0 #111, 1px -1px 0 #111, -1px -1px 0 #111;
+    --ink: #3a2616;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; min-height: 100vh; color: #fff;
+    font-family: 'Jua', 'Lilita One', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+    background: #ffcf3f repeating-conic-gradient(from 0deg at 50% 0%, #ffda5c 0deg 8deg, #ffc93a 8deg 16deg) fixed;
+    display: flex; flex-direction: column; align-items: center;
+  }
+  button { font-family: inherit; }
+  .screen { display: none; flex-direction: column; align-items: center; width: 100%; max-width: 940px; padding: 0 16px 28px; }
+  .screen.active { display: flex; }
+
+  .panel { background: #fff4d0; border: 4px solid #111; border-radius: 14px; box-shadow: 0 6px 0 #111; color: var(--ink); }
+  .bcBtn {
+    font-size: 19px; color: #fff; text-shadow: var(--ol); cursor: pointer; padding: 8px 18px;
+    background: linear-gradient(#ffe25a, #ffae00); border: 4px solid #111; border-radius: 14px;
+    box-shadow: inset 0 -5px 0 rgba(0,0,0,0.18), inset 0 4px 0 rgba(255,255,255,0.5), 0 5px 0 #111;
+  }
+  .bcBtn:hover:not(:disabled) { filter: brightness(1.07); }
+  .bcBtn:active:not(:disabled) { transform: translateY(4px); box-shadow: inset 0 -5px 0 rgba(0,0,0,0.18), inset 0 4px 0 rgba(255,255,255,0.5), 0 1px 0 #111; }
+  .bcBtn:disabled { filter: grayscale(1) brightness(0.75); cursor: not-allowed; }
+  .bcBtn.red { background: linear-gradient(#ff8a66, #e0331a); }
+  .bcBtn.blue { background: linear-gradient(#86d6ff, #2a86e0); }
+  .bcBtn.purple { background: linear-gradient(#e59aff, #9a3ad0); }
+  .bcBtn.green { background: linear-gradient(#94ee74, #36a426); }
+  .bcBtn.small { font-size: 15px; padding: 4px 12px; border-width: 3px; border-radius: 11px; box-shadow: inset 0 -3px 0 rgba(0,0,0,0.18), 0 3px 0 #111; }
+  .bcBtn.small:active:not(:disabled) { box-shadow: 0 0 0 #111; transform: translateY(3px); }
+
+  #topBar { width: 100%; max-width: 940px; display: flex; align-items: center; justify-content: space-between; padding: 12px 16px 6px; gap: 12px; }
+  #logo { line-height: 1; text-shadow: var(--ol); }
+  #logo .big { font-size: 36px; color: #fff; }
+  #logo .sub { font-size: 18px; color: #ff5a3c; }
+  #bones { font-size: 20px; padding: 6px 16px; border-radius: 20px; white-space: nowrap; }
+  body.inBattle #topBar { display: none; }
+
+  .screenHead { width: 100%; display: flex; align-items: center; justify-content: space-between; margin: 8px 0 16px; }
+  .screenHead h2 { margin: 0; font-size: 32px; font-weight: normal; text-shadow: var(--ol); }
+  .screenHead .spacer { width: 90px; }
+
+  /* ---- Lobby ---- */
+  .frame { border: 4px solid #111; border-radius: 14px; overflow: hidden; box-shadow: 0 6px 0 #111; line-height: 0; width: 100%; max-width: 900px; }
+  .frame canvas { display: block; width: 100%; height: auto; }
+  #lobbyMenu { display: flex; gap: 16px; margin-top: -34px; position: relative; flex-wrap: wrap; justify-content: center; align-items: flex-end; }
+  #battleBig { font-size: 44px; padding: 14px 48px 10px; border-radius: 20px; line-height: 1; }
+  #battleBig small { display: block; font-size: 16px; margin-top: 6px; }
+  .sideBig { font-size: 21px; padding: 12px 18px; line-height: 1.1; }
+  .sideBig .ico { display: block; font-size: 30px; text-shadow: none; }
+
+  /* ---- Stage select ---- */
+  #chapterTabs { display: flex; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; justify-content: center; }
+  #chapterTabs .bcBtn { font-size: 18px; }
+  #chapterTabs .bcBtn.off { background: linear-gradient(#d8ccb0, #a8987a); }
+  #chapterInfo { font-size: 16px; color: #fff; text-shadow: var(--ol-thin); margin-bottom: 12px; text-align: center; }
+  #stageGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(112px, 1fr)); gap: 10px; width: 100%; }
+  #stageGrid.events { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+  .stageTile {
+    position: relative; padding: 8px 4px 6px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 1px;
+    border-top: 8px solid var(--c); font-size: 13px;
+  }
+  .stageTile:hover:not(:disabled) { transform: translateY(-2px); }
+  .stageTile:active:not(:disabled) { transform: translateY(3px); box-shadow: 0 2px 0 #111; }
+  .stageTile:disabled { cursor: not-allowed; filter: grayscale(1) brightness(0.7); }
+  .stageTile.next { box-shadow: 0 6px 0 #111, 0 0 0 4px #ff5a3c; animation: pulse 0.6s ease-in-out infinite alternate; }
+  .stageTile .flag { font-size: 34px; line-height: 1.1; }
+  .stageTile .num { color: #b06a10; }
+  .stageTile .name { font-size: 17px; line-height: 1.15; text-align: center; }
+  .stageTile .rw { font-size: 12px; color: #7a6040; }
+  .stageTile .desc { font-size: 13px; color: #7a6040; text-align: center; padding: 0 6px; }
+  .stageTile .badge { position: absolute; top: 4px; right: 6px; font-size: 18px; }
+
+  /* ---- Unit cards (collection & gacha) ---- */
+  .dogCard {
+    width: 138px; background: #fff; border: 4px solid #111; border-radius: 12px; box-shadow: 0 4px 0 #111;
+    color: var(--ink); overflow: hidden; position: relative; padding: 0; text-align: center;
+  }
+  .dogCard .rar { background: var(--r); color: #fff; text-shadow: var(--ol-thin); font-size: 13px; padding: 3px 0; border-bottom: 3px solid #111; }
+  .dogCard img { width: 92px; height: 92px; display: block; margin: 2px auto 0; }
+  .dogCard .nm { font-size: 19px; }
+  .dogCard .st { font-size: 12px; color: #7a6a5a; padding: 2px 4px 8px; line-height: 1.45; }
+  .dogCard .badge {
+    position: absolute; top: 26px; right: 4px; font-size: 12px; padding: 1px 6px; border-radius: 8px;
+    border: 2px solid #111; background: #ffe25a; color: #fff; text-shadow: var(--ol-thin);
+  }
+  .dogCard .badge.new { background: #ff5a3c; }
+  .dogCard.rL { box-shadow: 0 4px 0 #111, 0 0 16px 4px rgba(255,220,80,0.9); }
+  .dogCard.locked img { filter: brightness(0); opacity: 0.3; }
+  .dogCard.locked .nm { color: #aaa; }
+  .dogCard .lvBtn {
+    display: block; width: calc(100% - 12px); margin: 0 6px 8px; font-size: 13px; padding: 3px 0; cursor: pointer;
+    color: #fff; text-shadow: var(--ol-thin); background: linear-gradient(#94ee74, #36a426); border: 3px solid #111; border-radius: 9px;
+  }
+  .dogCard .lvBtn:disabled { filter: grayscale(1) brightness(0.8); cursor: not-allowed; }
+  .rN { --r: #9a9a9a; } .rC { --r: #3aa0ff; } .rR { --r: #ffae00; } .rE { --r: #b040e0; }
+  .rL { --r: linear-gradient(90deg, #ff5a5a, #ffc93a, #5ad86a, #3aa0ff, #b040e0); }
+
+  /* ---- Squad ---- */
+  #squadPanel { width: 100%; max-width: 900px; padding: 12px 14px 16px; margin-bottom: 18px; }
+  #squadPanel .lbl { font-size: 19px; margin-bottom: 8px; }
+  #squadSlots { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+  #collectionGrid { display: grid; grid-template-columns: repeat(auto-fill, 138px); gap: 14px; width: 100%; justify-content: center; }
+  #collectionGrid .dogCard:not(.locked) { cursor: pointer; }
+  #collectionGrid .dogCard:not(.locked):hover { transform: translateY(-3px); }
+  #collectionGrid .dogCard.inSquad { background: #e4fbd4; }
+  #collectionGrid .dogCard.inSquad::after {
+    content: '✓'; position: absolute; top: 26px; left: 5px; width: 22px; height: 22px; border-radius: 50%;
+    background: #36a426; border: 2px solid #111; color: #fff; font-size: 13px; line-height: 18px;
+  }
+
+  /* ---- Gacha ---- */
+  #gachaMachine { width: 100%; max-width: 560px; padding: 18px; display: flex; flex-direction: column; align-items: center; gap: 12px; }
+  #gachaMachine .gTitle { font-size: 32px; color: #fff; text-shadow: var(--ol); }
+  .bigCapsule { width: 110px; height: 110px; position: relative; animation: wobble 2.4s ease-in-out infinite; }
+  @keyframes wobble { 0%, 100% { transform: rotate(-6deg); } 50% { transform: rotate(6deg); } }
+  #gachaRates { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+  #gachaRates span { background: var(--r); color: #fff; text-shadow: var(--ol-thin); font-size: 14px; padding: 3px 9px; border: 2px solid #111; border-radius: 10px; }
+  #gachaButtons { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; }
+  #gachaButtons .bcBtn { font-size: 24px; line-height: 1.1; }
+  #gachaButtons .bcBtn small { display: block; font-size: 15px; }
+  #gachaNote { font-size: 14px; color: #7a6040; text-align: center; line-height: 1.5; }
+  #gachaResults { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin-top: 20px; max-width: 760px; }
+
+  .capsule { position: relative; width: 150px; height: 150px; }
+  .capTop, .capBot { position: absolute; left: 0; width: 100%; height: 50%; border: 5px solid #111; transition: transform 0.45s ease-in, opacity 0.45s; }
+  .capTop { top: 0; border-radius: 999px 999px 0 0; background: var(--cap, #3aa0ff); border-bottom-width: 3px; }
+  .capBot { bottom: 0; border-radius: 0 0 999px 999px; background: #fff; border-top-width: 3px; }
+  .capTop::after { content: ''; position: absolute; left: 18%; top: 22%; width: 22%; height: 22%; border-radius: 50%; background: rgba(255,255,255,0.6); }
+  .bigCapsule .capTop, .bigCapsule .capBot { border-width: 4px; }
+
+  #capsuleOverlay {
+    position: fixed; inset: 0; display: none; flex-direction: column; align-items: center; justify-content: center;
+    background: rgba(20,10,30,0.82); z-index: 20; cursor: pointer;
+  }
+  #capsuleOverlay.show { display: flex; }
+  #capStage { position: relative; width: 300px; height: 300px; display: flex; align-items: center; justify-content: center; }
+  #capRays {
+    position: absolute; inset: -80px; border-radius: 50%; opacity: 0;
+    background: repeating-conic-gradient(rgba(255,240,150,0.55) 0deg 10deg, transparent 10deg 20deg);
+    -webkit-mask: radial-gradient(circle, #000 30%, transparent 70%); mask: radial-gradient(circle, #000 30%, transparent 70%);
+  }
+  #capStage.opened #capRays { opacity: 1; animation: spin 6s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  #capStage .capsule.drop { animation: capDrop 0.55s cubic-bezier(.3,1.5,.6,1), capShake 0.45s 0.6s ease-in-out; }
+  @keyframes capDrop { from { transform: translateY(-420px); } to { transform: translateY(0); } }
+  @keyframes capShake { 0%, 100% { transform: rotate(0); } 25% { transform: rotate(-14deg); } 75% { transform: rotate(14deg); } }
+  #capStage.opened .capTop { transform: translateY(-170px) rotate(-35deg); opacity: 0; }
+  #capStage.opened .capBot { transform: translateY(170px) rotate(20deg); opacity: 0; }
+  #revealCard { position: absolute; display: none; }
+  #capStage.opened #revealCard { display: block; animation: popIn 0.35s cubic-bezier(.3,1.6,.6,1); }
+  #revealCard .dogCard { transform: scale(1.35); }
+  @keyframes popIn { from { transform: scale(0); } to { transform: scale(1); } }
+  #capHint { margin-top: 50px; font-size: 24px; text-shadow: var(--ol); min-height: 30px; }
+  #capCount { position: absolute; top: 16px; left: 50%; transform: translateX(-50%); font-size: 24px; text-shadow: var(--ol); }
+  #skipBtn { position: absolute; top: 14px; right: 16px; }
+
+  /* ---- Battle ---- */
+  #field { position: relative; margin-top: 10px; }
+  #backBtn { position: absolute; top: 8px; left: 8px; }
+  #stageLabel { position: absolute; top: 8px; left: 50%; transform: translateX(-50%); font-size: 22px; text-shadow: var(--ol); line-height: 1.2; white-space: nowrap; }
+  #money { position: absolute; top: 4px; right: 12px; font-size: 30px; color: #ffe25a; text-shadow: var(--ol); line-height: 1.2; }
+  #battleBar { display: flex; align-items: center; gap: 14px; margin-top: 14px; width: 100%; max-width: 900px; justify-content: space-between; }
+  .roundBtn {
+    width: 112px; height: 112px; border-radius: 50%; border: 5px solid #111; box-shadow: 0 5px 0 #111; color: #fff; text-shadow: var(--ol);
+    cursor: pointer; position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; flex-shrink: 0; line-height: 1.1; padding: 0;
+  }
+  .roundBtn:active:not(:disabled) { transform: translateY(4px); box-shadow: 0 1px 0 #111; }
+  .roundBtn:disabled { cursor: not-allowed; }
+  #workerBtn { background: radial-gradient(circle at 50% 30%, #fff0a0, #ffae00 70%); }
+  #workerBtn .t { font-size: 15px; }
+  #workerBtn .lv { font-size: 22px; }
+  #workerBtn .c { font-size: 16px; color: #ffe25a; }
+  #workerBtn:disabled { filter: grayscale(0.8) brightness(0.75); }
+  #cannonBtn { background: conic-gradient(#ffe25a calc(var(--p, 0) * 1%), #6a5a4a 0); }
+  #cannonBtn::before { content: ''; position: absolute; inset: 9px; border-radius: 50%; background: radial-gradient(circle at 50% 30%, #ffa488, #d9331a 70%); border: 3px solid #111; }
+  #cannonBtn > span { position: relative; font-size: 28px; }
+  #cannonBtn:disabled::before { filter: grayscale(0.7) brightness(0.7); }
+  #cannonBtn.ready { animation: pulse 0.5s ease-in-out infinite alternate; }
+  @keyframes pulse { to { transform: scale(1.07); } }
+  #slots { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; flex: 1; max-width: 580px; }
+  .slot {
+    aspect-ratio: 1.3; border: 4px solid #111; border-radius: 10px; background: #fff center 35% / auto 82% no-repeat;
+    position: relative; box-shadow: 0 4px 0 #111; cursor: pointer; padding: 0; overflow: hidden;
+  }
+  .slot:active:not(.cant):not(.empty) { transform: translateY(3px); box-shadow: 0 1px 0 #111; }
+  .slot.empty { background: #9a8a70; box-shadow: inset 0 3px 6px rgba(0,0,0,0.35), 0 4px 0 #111; cursor: default; }
+  .slot .cost { position: absolute; bottom: 1px; right: 5px; font-size: 16px; color: #ffe25a; text-shadow: var(--ol); line-height: 1.2; z-index: 2; }
+  /* cooltime: dark shade that drains away, with a seconds countdown */
+  .slot .cdMask { position: absolute; left: 0; right: 0; bottom: 0; background: rgba(20,20,40,0.62); display: none; z-index: 1; }
+  .slot .cdNum { position: absolute; inset: 0; display: none; align-items: center; justify-content: center; font-size: 26px; color: #8fd6ff; text-shadow: var(--ol); z-index: 2; }
+  .slot.cooling .cdMask { display: block; }
+  .slot.cooling .cdNum { display: flex; }
+  .slot.cant:not(.cooling) { filter: brightness(0.5) saturate(0.6); cursor: not-allowed; }
+  .slot.cooling { cursor: not-allowed; }
+
+  #banner {
+    position: fixed; top: 44%; left: 50%; transform: translate(-50%, -50%); z-index: 10;
+    display: none; flex-direction: column; align-items: center; gap: 12px; padding: 20px 30px 24px; min-width: 300px;
+  }
+  #bannerText { font-size: 50px; text-shadow: var(--ol); text-align: center; line-height: 1.1; }
+  #bannerReward { font-size: 22px; color: #b06a10; white-space: pre-line; text-align: center; }
+  #bannerButtons { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+
+  @media (max-width: 720px) {
+    #logo .big { font-size: 26px; } #logo .sub { font-size: 14px; }
+    #battleBig { font-size: 32px; padding: 12px 30px 8px; }
+    .roundBtn { width: 76px; height: 76px; border-width: 4px; }
+    #workerBtn .t { font-size: 11px; } #workerBtn .lv { font-size: 15px; } #workerBtn .c { font-size: 12px; }
+    #cannonBtn > span { font-size: 18px; } #cannonBtn::before { inset: 6px; }
+    #battleBar { gap: 6px; } #slots { gap: 4px; }
+    .slot { border-width: 3px; } .slot .cost { font-size: 12px; } .slot .cdNum { font-size: 18px; }
+    #money { font-size: 20px; } #stageLabel { font-size: 15px; top: 40px; }
+    #stageGrid { grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); } .stageTile .name { font-size: 14px; }
+  }
+</style>
+</head>
+<body>
+  <div id="topBar">
+    <div id="logo"><div class="big">멍멍 특공대</div><div class="sub">vs 냥이 침공</div></div>
+    <div class="panel" id="bones">🦴 0</div>
+  </div>
+
+  <!-- Lobby -->
+  <div class="screen" id="lobby">
+    <div class="frame"><canvas id="lobbyCanvas" width="900" height="270"></canvas></div>
+    <div id="lobbyMenu">
+      <button class="bcBtn purple sideBig" id="gachaBtn"><span class="ico">🥚</span>레어<br>뽑기</button>
+      <button class="bcBtn red" id="battleBig">전투 개시!<small id="playSub"></small></button>
+      <button class="bcBtn blue sideBig" id="dogsBtn"><span class="ico">🐾</span>편성<br><span id="dogsSub" style="font-size:14px"></span></button>
+    </div>
+  </div>
+
+  <!-- Stage select -->
+  <div class="screen" id="stageSelect">
+    <div class="screenHead">
+      <button class="bcBtn small toLobby">◀ 뒤로</button>
+      <h2>스테이지</h2>
+      <div class="spacer"></div>
+    </div>
+    <div id="chapterTabs"></div>
+    <div id="chapterInfo"></div>
+    <div id="stageGrid"></div>
+  </div>
+
+  <!-- Gacha -->
+  <div class="screen" id="gacha">
+    <div class="screenHead">
+      <button class="bcBtn small toLobby">◀ 뒤로</button>
+      <h2>레어 뽑기</h2>
+      <div class="spacer"></div>
+    </div>
+    <div class="panel" id="gachaMachine">
+      <div class="gTitle">레어 캡슐</div>
+      <div class="capsule bigCapsule rL" style="--cap: var(--r)"><div class="capTop"></div><div class="capBot"></div></div>
+      <div id="gachaRates"></div>
+      <div id="gachaButtons">
+        <button class="bcBtn" id="pull1">1회 뽑기<small>🦴 100</small></button>
+        <button class="bcBtn red" id="pull10">10연차<small>🦴 900</small></button>
+      </div>
+      <div id="gachaNote">10연차는 슈퍼레어 이상 1마리 확정!<br>중복되면 레벨업 (체력·공격력 +10%, 최대 Lv 10)</div>
+    </div>
+    <div id="gachaResults"></div>
+  </div>
+
+  <!-- Squad -->
+  <div class="screen" id="collection">
+    <div class="screenHead">
+      <button class="bcBtn small toLobby">◀ 뒤로</button>
+      <h2>편성</h2>
+      <div class="spacer"></div>
+    </div>
+    <div class="panel" id="squadPanel">
+      <div class="lbl" id="squadLbl"></div>
+      <div id="squadSlots"></div>
+    </div>
+    <div id="collectionGrid"></div>
+  </div>
+
+  <!-- Battle -->
+  <div class="screen" id="gameScreen">
+    <div class="frame" id="field">
+      <canvas id="game" width="900" height="360"></canvas>
+      <button class="bcBtn small" id="backBtn">❚❚</button>
+      <div id="stageLabel"></div>
+      <div id="money">0/0원</div>
+    </div>
+    <div id="battleBar">
+      <button class="roundBtn" id="workerBtn"><span class="t">일꾼</span><span class="lv" id="workerLv">레벨 1</span><span class="c" id="workerCost">30원</span></button>
+      <div id="slots"></div>
+      <button class="roundBtn" id="cannonBtn" disabled><span id="cannonLabel">발사!</span></button>
+    </div>
+  </div>
+
+  <div class="panel" id="banner">
+    <div id="bannerText"></div>
+    <div id="bannerReward"></div>
+    <div id="bannerButtons">
+      <button class="bcBtn green" id="resumeBtn">계속하기</button>
+      <button class="bcBtn" id="retryBtn">다시하기</button>
+      <button class="bcBtn red" id="nextBtn">다음 ▶</button>
+      <button class="bcBtn blue" id="menuBtn">지도</button>
+      <button class="bcBtn purple toLobby">로비</button>
+    </div>
+  </div>
+
+  <div id="capsuleOverlay">
+    <div id="capCount"></div>
+    <button class="bcBtn small" id="skipBtn">건너뛰기 ▶▶</button>
+    <div id="capStage">
+      <div id="capRays"></div>
+      <div class="capsule" id="capsule"><div class="capTop"></div><div class="capBot"></div></div>
+      <div id="revealCard"></div>
+    </div>
+    <div id="capHint"></div>
+  </div>
+
+<script>
+const $ = id => document.getElementById(id);
+const canvas = $('game');
+const ctx = canvas.getContext('2d');
+const W = canvas.width, H = canvas.height;
+const FONT = "'Jua', 'Lilita One', sans-serif";
+const CURRENCY = '원';
+
+const LANE_Y = 282;          // where feet touch the ground
+const SCENERY_SHIFT = 37;    // scenery is authored with its horizon at y=190
+const PLAYER_TOWER_X = W - 62;
+const ENEMY_TOWER_X = 62;
+const TOWER_HALF = 38;
+const PLAYER_BASE_HP = 1500;
+const DIR = { player: -1, enemy: 1 };  // our army marches left, cats march right
+const KB_TIME = 0.45;
+
+const IMAGES = {};
+function loadImage(key, src) {
+  const img = new Image();
+  img.src = src;
+  IMAGES[key] = img;
+}
+loadImage('background', 'assets/background.jpeg');
+// Your art: transparent cutouts of dog.jpeg / dog_tower.jpeg / cat_tower.jpeg, plus cat.png as-is.
+loadImage('doge', 'assets/dog_cut.png');
+loadImage('cat', 'assets/cat.png');
+loadImage('dogTower', 'assets/dog_tower_cut.png');
+loadImage('catTower', 'assets/cat_tower_cut.png');
+loadImage('tankCat', 'assets/tank_cat_cut.png');
+loadImage('bossCat', 'assets/boss_cat_cut.png');
+function ready(img) { return img && img.complete && img.naturalWidth > 0; }
+
+const CANNON_MAX = 100;
+const CANNON_CHARGE_TIME = 12;
+const CANNON_DAMAGE = 120;
+let cannonCharge = 0;
+
+// ---- Our army ----
+// starter: owned from the beginning and never in the gacha pool.
+// rarity: N 기본, C 레어, R 슈퍼레어, E 울트라슈퍼레어, L 레전드레어.
+// cd: cooltime in seconds before the same unit can be deployed again. kb: knockbacks before death.
+const UNIT_TYPES = {
+  doggo:    { name: '멍뭉이', rarity: 'N', starter: true, cost: 50,  cd: 2.5, hp: 120, atk: 12, range: 25,  speed: 45, atkCooldown: 1.0, size: 26, kb: 2 },
+  snake:    { name: '뇨로', rarity: 'N', starter: true, cost: 30,  cd: 1.5, hp: 60,  atk: 8,  range: 22,  speed: 65, atkCooldown: 0.7, size: 24, kb: 1 },
+  hippo:    { name: '하마짱',   rarity: 'N', starter: true, cost: 100, cd: 5.0, hp: 380, atk: 7,  range: 25,  speed: 20, atkCooldown: 1.2, size: 34, kb: 1 },
+  pig:      { name: '돼지녀석', rarity: 'C', cost: 60,  cd: 3.5, hp: 180, atk: 12, range: 25,  speed: 38, atkCooldown: 1.0, size: 28, kb: 2 },
+  sheep:    { name: '메에짱', rarity: 'C', cost: 80,  cd: 4.0, hp: 90,  atk: 15, range: 100, speed: 34, atkCooldown: 1.3, size: 28, kb: 2 },
+  squirrel: { name: '다람쥐군', rarity: 'R', cost: 70,  cd: 3.0, hp: 120, atk: 16, range: 22,  speed: 72, atkCooldown: 0.6, size: 24, kb: 2 },
+  kangaroo: { name: '캥거류', rarity: 'R', cost: 120, cd: 6.0, hp: 260, atk: 24, range: 30,  speed: 55, atkCooldown: 1.0, size: 32, kb: 3 },
+  gorilla:  { name: '고리씨', rarity: 'E', cost: 170, cd: 8.0, hp: 480, atk: 32, range: 30,  speed: 30, atkCooldown: 1.1, size: 34, kb: 3 },
+  rhino:    { name: '일각군', rarity: 'L', cost: 240, cd: 12,  hp: 750, atk: 48, range: 35,  speed: 42, atkCooldown: 0.9, size: 36, kb: 3 },
+  fox:      { name: '여우',     rarity: 'C', cost: 55,  cd: 3.0, hp: 110, atk: 14, range: 22,  speed: 62, atkCooldown: 0.8, size: 26, kb: 2 },
+  panda:    { name: '판다',     rarity: 'C', cost: 90,  cd: 4.5, hp: 320, atk: 9,  range: 25,  speed: 26, atkCooldown: 1.2, size: 32, kb: 2 },
+  zebra:    { name: '얼룩말',   rarity: 'R', cost: 90,  cd: 4.0, hp: 170, atk: 22, range: 25,  speed: 82, atkCooldown: 0.8, size: 30, kb: 2 },
+  cobra:    { name: '킹코브라', rarity: 'R', cost: 110, cd: 5.0, hp: 100, atk: 26, range: 140, speed: 40, atkCooldown: 1.6, size: 26, kb: 2 },
+  bear:     { name: '곰선생',     rarity: 'E', cost: 190, cd: 9.0, hp: 560, atk: 30, range: 35,  speed: 32, atkCooldown: 1.3, size: 36, kb: 3, area: true },
+  orangutan:{ name: '오랑우탄', rarity: 'E', cost: 200, cd: 10,  hp: 300, atk: 34, range: 110, speed: 30, atkCooldown: 1.7, size: 34, kb: 3, area: true },
+  elephant: { name: '코끼리',   rarity: 'L', cost: 280, cd: 14,  hp: 1100, atk: 40, range: 45, speed: 26, atkCooldown: 1.4, size: 40, kb: 3, area: true },
+};
+const UNIT_LOOKS = {
+  doggo:    { kind: 'sprite', img: 'doge', src: 'assets/dog_cut.png', height: 36, fallback: { body: '#ffffff', ear: 'pointy', tail: 'curl' } },
+  snake:    { kind: 'snake', body: '#f4efdc' },
+  hippo:    { kind: 'quad', body: '#b3aac8', wide: true, headR: 13, ear: 'nub', bigSnout: true, tail: 'stub', legs: 0.6 },
+  pig:      { kind: 'quad', body: '#ffc9d6', ear: 'pointy', pigNose: '#ffb0c4', tail: 'curl', legs: 0.7 },
+  sheep:    { kind: 'quad', body: '#ffffff', wool: true, headColor: '#3a3a3a', ear: 'flop', earColor: '#3a3a3a', legColor: '#3a3a3a', noSnout: true, eyeColor: '#fff' },
+  squirrel: { kind: 'quad', body: '#d8a060', belly: '#f7e6c8', face: '#f7e6c8', ear: 'pointy', tail: 'bushy', legs: 0.6 },
+  kangaroo: { kind: 'hopper', body: '#d6a06a', belly: '#f3d6b0', gloves: '#e0331a' },
+  gorilla:  { kind: 'ape', body: '#3c3c44', face: '#b0a098' },
+  rhino:    { kind: 'quad', body: '#a8adb5', wide: true, headR: 12, ear: 'pointy', horn: true, tail: 'stub', legs: 0.8, crown: true, aura: true },
+  fox:      { kind: 'quad', body: '#f08a30', belly: '#ffffff', face: '#ffffff', ear: 'pointy', tail: 'bushy', legs: 0.8, legColor: '#3a2a1a' },
+  panda:    { kind: 'quad', body: '#ffffff', wide: true, headR: 12, ear: 'nub', earColor: '#222', legColor: '#222', tail: 'stub', legs: 0.7, eyePatch: '#222', eyeColor: '#fff' },
+  zebra:    { kind: 'quad', body: '#ffffff', stripes: '#222', ear: 'pointy', legs: 1.2 },
+  cobra:    { kind: 'snake', body: '#7ab84a' },
+  bear:     { kind: 'quad', body: '#8a5a32', wide: true, headR: 13, ear: 'nub', tail: 'stub', legs: 0.8 },
+  orangutan:{ kind: 'ape', body: '#c8622a', face: '#f0c090' },
+  elephant: { kind: 'quad', body: '#9aa0ad', wide: true, headR: 14, ear: 'fan', trunk: true, noSnout: true, tail: 'stub', legs: 0.9, crown: true, aura: true },
+};
+const RARITY_NAMES = { N: '기본', C: '레어', R: '슈퍼레어', E: '울트라슈퍼레어', L: '레전드레어' };
+const RARITY_COLORS = { N: '#ffffff', C: '#6ac0ff', R: '#ffd54a', E: '#e59aff', L: '#ff8a8a' };
+const CAPSULE_COLORS = {
+  C: '#3aa0ff', R: '#ffae00', E: '#b040e0',
+  L: 'linear-gradient(90deg, #ff5a5a, #ffc93a, #5ad86a, #3aa0ff, #b040e0)',
+};
+const RARITY_RATES = [['L', 2], ['E', 8], ['R', 30], ['C', 60]];
+const MAX_LEVEL = 20;
+function levelCost(lv) { return 60 * lv; }
+const MAX_SQUAD = 10;
+const PULL_COST = 100;
+const PULL10_COST = 900;
+const MAXED_DUPE_REFUND = 20;
+
+// Enemy cats. rarity follows the Battle Cats tiers: N 기본, C 레어, R 슈퍼레어, E 울트라슈퍼레어.
+// area: hits every target in range. fly: drawn floating above the lane.
+const ENEMY_TYPES = {
+  cat:      { name: '냥코',        rarity: 'N', hp: 80,   atk: 8,   range: 25,  speed: 30, atkCooldown: 1.1, size: 26, kb: 2, reward: 25 },
+  bigCat:   { name: '탱크냥코',    rarity: 'N', hp: 220,  atk: 6,   range: 25,  speed: 15, atkCooldown: 1.4, size: 34, kb: 1, reward: 50 },
+  axe:      { name: '배틀냥코',    rarity: 'N', hp: 110,  atk: 16,  range: 25,  speed: 36, atkCooldown: 0.9, size: 28, kb: 2, reward: 40 },
+  gross:    { name: '징그러운냥코',  rarity: 'N', hp: 100,  atk: 22,  range: 115, speed: 28, atkCooldown: 2.0, size: 30, kb: 2, reward: 60 },
+  cow:      { name: '소냥코',      rarity: 'N', hp: 150,  atk: 7,   range: 22,  speed: 80, atkCooldown: 0.4, size: 30, kb: 3, reward: 60 },
+  bird:     { name: '새냥코',      rarity: 'N', hp: 140,  atk: 20,  range: 40,  speed: 34, atkCooldown: 1.5, size: 28, kb: 3, reward: 70, fly: 26 },
+  fish:     { name: '물고기냥코',  rarity: 'N', hp: 400,  atk: 26,  range: 30,  speed: 22, atkCooldown: 1.4, size: 32, kb: 3, reward: 90 },
+  lizard:   { name: '도마뱀냥코',  rarity: 'N', hp: 260,  atk: 36,  range: 135, speed: 22, atkCooldown: 2.5, size: 32, kb: 3, reward: 110 },
+  titan:    { name: '거신냥코',    rarity: 'N', hp: 900,  atk: 55,  range: 30,  speed: 18, atkCooldown: 2.0, size: 44, kb: 3, reward: 200 },
+  ninja:    { name: '닌자냥코',    rarity: 'C', hp: 160,  atk: 24,  range: 25,  speed: 70, atkCooldown: 0.7, size: 26, kb: 3, reward: 120 },
+  sumo:     { name: '스모냥코',    rarity: 'C', hp: 900,  atk: 12,  range: 25,  speed: 16, atkCooldown: 1.5, size: 40, kb: 1, reward: 150 },
+  jurassic: { name: '냥코쥬라',  rarity: 'R', hp: 500,  atk: 42,  range: 30,  speed: 50, atkCooldown: 1.0, size: 40, kb: 3, reward: 250 },
+  ufo:      { name: '냥코UFO',     rarity: 'R', hp: 400,  atk: 28,  range: 120, speed: 30, atkCooldown: 1.6, size: 34, kb: 3, reward: 250, area: true, fly: 22 },
+  valkyrie: { name: '냥코발키리',  rarity: 'E', hp: 1100, atk: 40,  range: 60,  speed: 45, atkCooldown: 1.2, size: 42, kb: 4, reward: 600, area: true },
+  bahamut:  { name: '냥코무트', rarity: 'E', hp: 1800, atk: 60,  range: 70,  speed: 35, atkCooldown: 1.5, size: 48, kb: 4, reward: 1000, area: true },
+  cyclone:  { name: '거대 싸이클론',  rarity: 'E', hp: 300,  atk: 22,  range: 40,  speed: 55, atkCooldown: 0.5, size: 40, kb: 6, reward: 300 },
+  pirate:   { name: '해적냥코',    rarity: 'N', hp: 240,  atk: 28,  range: 30,  speed: 34, atkCooldown: 1.1, size: 30, kb: 3, reward: 100 },
+  golden:   { name: '황금냥코',    rarity: 'C', hp: 200,  atk: 5,   range: 22,  speed: 60, atkCooldown: 1.2, size: 26, kb: 1, reward: 400 },
+  ghost:    { name: '유령냥코',    rarity: 'C', hp: 180,  atk: 18,  range: 30,  speed: 40, atkCooldown: 1.0, size: 28, kb: 2, reward: 100, fly: 14 },
+  mecha:    { name: '메카냥코',    rarity: 'R', hp: 700,  atk: 38,  range: 90,  speed: 26, atkCooldown: 1.6, size: 38, kb: 3, reward: 300, area: true },
+};
+const CAT_LOOKS = {
+  cat:    { kind: 'sprite', img: 'cat', src: 'assets/cat.png', height: 34, fallback: { kind: 'blobcat' } },
+  boss:   { kind: 'sprite', img: 'bossCat', src: 'assets/boss_cat_cut.png', height: 60, fallback: { kind: 'blobcat', wide: 1.3 } },
+  gross:  { kind: 'sprite', img: 'bossCat', src: 'assets/boss_cat_cut.png', height: 48, fallback: { kind: 'blobcat' } },
+  axe:      { kind: 'blobcat', angry: true, helmet: '#9aa0aa', axe: true },
+  cow:      { kind: 'cat', body: '#ffffff', spots: '#2a2a2a', tail: 'cat', legs: 1.2 },
+  bird:     { kind: 'blobcat', beak: true, wings: '#b0875a' },
+  fish:     { kind: 'fishcat', body: '#9ad0ff', fin: '#6aa8e0' },
+  lizard:   { kind: 'cat', body: '#ffffff', spikes: '#6ac04a', tail: 'cat', wide: true },
+  titan:    { kind: 'blobcat', wide: 1.35, arms: true, angry: true, headband: '#e0452b', body: '#f4ede4' },
+  ninja:    { kind: 'blobcat', mask: '#2a2a3a', angry: true },
+  sumo:     { kind: 'blobcat', wide: 1.7, belt: '#3a5aa0' },
+  jurassic: { kind: 'jurassic', dino: '#7ac06a' },
+  ufo:      { kind: 'ufo' },
+  valkyrie: { kind: 'blobcat', helmet: '#ffd54a', helmetWings: true, wings: '#ffffff', spear: true, armor: '#ffd54a' },
+  bahamut:  { kind: 'blobcat', body: '#5a4a7a', wings: '#3a2a5a', horns: '#e8e0d0', glowEyes: '#ff3a3a', angry: true, wide: 1.2 },
+  cyclone: { kind: 'cyclone' },
+  pirate:   { kind: 'blobcat', helmet: '#2a2a3a', axe: true, angry: true, belt: '#c0392b' },
+  golden:   { kind: 'blobcat', body: '#ffd54a', aura: true },
+  ghost:    { kind: 'blobcat', body: 'rgba(225,235,255,0.75)', glowEyes: '#3aa0ff' },
+  mecha:    { kind: 'blobcat', body: '#b8c0cc', armor: '#707888', glowEyes: '#ff3a3a', angry: true, wide: 1.2 },
+  bigCat: { kind: 'sprite', img: 'tankCat', src: 'assets/tank_cat_cut.png', height: 50, fallback: { kind: 'cat', body: '#ffffff', tail: 'cat', wide: true } },
+};
+
+// ---- Stages ----
+// 세계편 1장 (Empire of Cats ch.1) and 미래편 1장 (Into the Future ch.1) follow the real
+// Battle Cats routes; 이벤트 stages have their own gimmicks.
+const PLACES = {
+  korea: ['한국', '🇰🇷'], mongolia: ['몽골', '🇲🇳'], china: ['중국', '🇨🇳'], thailand: ['태국', '🇹🇭'],
+  cambodia: ['캄보디아', '🇰🇭'], philippines: ['필리핀', '🇵🇭'], japan: ['일본', '🇯🇵'], australia: ['호주', '🇦🇺'],
+  singapore: ['싱가포르', '🇸🇬'], maldives: ['몰디브', '🇲🇻'], india: ['인도', '🇮🇳'], nepal: ['네팔', '🇳🇵'],
+  dubai: ['두바이', '🇦🇪'], saudi: ['사우디아라비아', '🇸🇦'], kenya: ['케냐', '🇰🇪'], madagascar: ['마다가스카르', '🇲🇬'],
+  southafrica: ['남아프리카 공화국', '🇿🇦'], ghana: ['가나', '🇬🇭'], sahara: ['사하라 사막', '🏜️'], egypt: ['이집트', '🇪🇬'],
+  turkey: ['터키', '🇹🇷'], russia: ['러시아', '🇷🇺'], greece: ['그리스', '🇬🇷'], italy: ['이탈리아', '🇮🇹'],
+  monaco: ['모나코', '🇲🇨'], spain: ['스페인', '🇪🇸'], france: ['프랑스', '🇫🇷'], germany: ['독일', '🇩🇪'],
+  denmark: ['덴마크', '🇩🇰'], norway: ['노르웨이', '🇳🇴'], uk: ['영국', '🇬🇧'], greenland: ['그린란드', '🇬🇱'],
+  canada: ['캐나다', '🇨🇦'], newyork: ['뉴욕', '🗽'], bermuda: ['버뮤다', '🇧🇲'], jamaica: ['자메이카', '🇯🇲'],
+  colombia: ['콜롬비아', '🇨🇴'], brazil: ['브라질', '🇧🇷'], argentina: ['아르헨티나', '🇦🇷'], machupicchu: ['마추픽추', '🇵🇪'],
+  easter: ['이스터섬', '🗿'], mexico: ['멕시코', '🇲🇽'], nasa: ['NASA', '🚀'], vegas: ['라스베이거스', '🎰'],
+  hollywood: ['할리우드', '🎬'], alaska: ['알래스카', '🏔️'], hawaii: ['하와이', '🌺'], moon: ['달', '🌕'],
+  abyss: ['심연', '🌊'], floating: ['공중 대륙', '☁️'],
+};
+const EOC_ROUTE = ['korea', 'mongolia', 'china', 'thailand', 'cambodia', 'philippines', 'japan', 'australia', 'singapore',
+  'maldives', 'india', 'nepal', 'dubai', 'saudi', 'kenya', 'madagascar', 'southafrica', 'ghana', 'sahara', 'egypt',
+  'turkey', 'russia', 'greece', 'italy', 'monaco', 'spain', 'france', 'germany', 'denmark', 'norway', 'uk', 'greenland',
+  'canada', 'newyork', 'bermuda', 'jamaica', 'colombia', 'brazil', 'argentina', 'machupicchu', 'easter', 'mexico',
+  'nasa', 'vegas', 'hollywood', 'alaska', 'hawaii', 'moon'];
+const ITF_ROUTE = ['japan', 'korea', 'china', 'mongolia', 'russia', 'norway', 'uk', 'denmark', 'germany', 'france',
+  'spain', 'monaco', 'italy', 'greece', 'turkey', 'dubai', 'india', 'nepal', 'thailand', 'cambodia', 'philippines',
+  'singapore', 'australia', 'abyss', 'madagascar', 'kenya', 'saudi', 'egypt', 'sahara', 'ghana', 'southafrica',
+  'argentina', 'easter', 'machupicchu', 'colombia', 'jamaica', 'mexico', 'hollywood', 'vegas', 'alaska', 'canada',
+  'greenland', 'newyork', 'nasa', 'bermuda', 'brazil', 'floating', 'moon'];
+const CHAPTERS = {
+  eoc:   { name: '세계편 1장', color: '#e0452b' },
+  itf:   { name: '미래편 1장', color: '#7a3ad0' },
+  itf2:  { name: '미래편 2장', color: '#2a50c0' },
+  event: { name: '이벤트', color: '#36a426' },
+};
+
+// Enemy lineup, introduced over 세계편 1장 like new enemies in Battle Cats:
+// [type, 세계편 stage where it first appears, spawn weight].
+const ENEMY_DEBUT = [
+  ['cat', 1, 10], ['bigCat', 2, 4], ['axe', 4, 5], ['gross', 7, 3], ['cow', 10, 4], ['bird', 14, 4],
+  ['fish', 18, 3], ['lizard', 22, 2], ['titan', 28, 1.5], ['ninja', 32, 2], ['sumo', 32, 1.5],
+  ['pirate', 25, 2], ['ghost', 36, 1.5], ['jurassic', 40, 1], ['ufo', 40, 1],
+];
+function enemyPool(ch, num) {
+  const at = ch === 'eoc' ? num : 99;
+  const pool = ENEMY_DEBUT.filter(e => at >= e[1]).map(([t, , w]) => [t, w]);
+  if (ch === 'itf') pool.push(['valkyrie', num / 100]);
+  if (ch === 'itf' && num >= 36) pool.push(['bahamut', 0.2]);
+  if (ch === 'itf' && num >= 12) pool.push(['mecha', 0.6]);
+  if (ch === 'itf2') pool.push(['valkyrie', 0.4 + num / 60], ['mecha', 1.2], ['bahamut', num >= 24 ? 0.4 : 0.15]);
+  return pool;
+}
+// [boss type, strength multiplier]
+function bossFor(ch, num) {
+  if (ch === 'eoc') return num === 48 ? ['valkyrie', 1.0] : num >= 32 ? ['jurassic', 2] : num >= 16 ? ['titan', 1.5] : ['bigCat', 2.5];
+  if (ch === 'itf2') return num === 48 ? ['bahamut', 1.6] : num >= 24 ? ['mecha', 3] : ['valkyrie', 1.4];
+  return num === 48 ? ['bahamut', 1.0] : num >= 24 ? ['valkyrie', 1.1] : ['titan', 1.5];
+}
+
+// Difficulty rises smoothly along each chapter. enemyMult scales enemy HP and attack;
+// the boss appears the first time the cat base drops below bossAt of its HP.
+function chapterParams(ch, i) {
+  const t = i / 47;
+  if (ch === 'eoc') return {
+    towerHp: Math.round(800 + 1400 * t), spawnStart: 5 - 2.4 * t, spawnMin: 2.5 - 1.6 * t,
+    enemyMult: 0.9 + 1.4 * Math.pow(t, 0.9), bossAt: 0.4 + 0.3 * t,
+    rewardFirst: 100 + 10 * i, rewardReplay: 30 + 3 * i,
+  };
+  // 미래편 2장: tougher aliens with mecha cats and more bahamuts
+  if (ch === 'itf2') return {
+    towerHp: Math.round(2800 + 900 * t), spawnStart: 2.8 - 0.5 * t, spawnMin: 1.2 - 0.3 * t,
+    enemyMult: 2.2 + 0.9 * t, bossAt: 0.5 + 0.3 * t,
+    rewardFirst: 1000 + 20 * i, rewardReplay: 250 + 6 * i, alien: true,
+  };
+  // 미래편: alien cats, picking up where 세계편 ended and climbing further
+  return {
+    towerHp: Math.round(2000 + 600 * t), spawnStart: 3.2 - 0.6 * t, spawnMin: 1.4 - 0.3 * t,
+    enemyMult: 1.6 + 0.5 * t, bossAt: 0.5 + 0.3 * t,
+    rewardFirst: 600 + 15 * i, rewardReplay: 150 + 5 * i, alien: true,
+  };
+}
+
+// unlockAt: how many 세계편 stages must be cleared first.
+const EVENTS = [
+  { id: 'xp', name: '경험치는 맛있어!', flag: '🍖', desc: '약한 냥코가 우르르! 처치 보상 2배', unlockAt: 1, scene: 'party',
+    towerHp: 700, spawnStart: 1.4, spawnMin: 0.9, enemyMult: 0.7, pool: [['cat', 1]], bossAt: 0, enemyReward: 2,
+    rewardFirst: 400, rewardReplay: 250 },
+  { id: 'tanks', name: '탱크냥코 대행진', flag: '🧱', desc: '탱크냥코만 몰려온다', unlockAt: 7, scene: 'sahara',
+    towerHp: 1400, spawnStart: 3.5, spawnMin: 2.2, enemyMult: 1.6, pool: [['bigCat', 1]], bossAt: 0.5, bossType: 'sumo', bossMult: 2,
+    rewardFirst: 800, rewardReplay: 200 },
+  { id: 'treasure', name: '보물 사냥', flag: '💰', desc: '황금냥코를 잡으면 돈이 펑펑!', unlockAt: 12, scene: 'vegas',
+    towerHp: 1200, spawnStart: 2.5, spawnMin: 1.6, enemyMult: 1.1, pool: [['golden', 2], ['cat', 2], ['axe', 1]], bossAt: 0.5, bossType: 'golden', bossMult: 3,
+    rewardFirst: 1200, rewardReplay: 600 },
+  { id: 'crazed', name: '폭주하는 냥코', flag: '😾', desc: '거대한 보스가 처음부터 폭주한다!', unlockAt: 20, scene: 'volcano',
+    towerHp: 1500, spawnStart: 6, spawnMin: 4, enemyMult: 2.5, pool: [['cat', 3], ['axe', 2], ['cow', 1]], bossAt: 0, startBoss: true, bossType: 'cat', bossMult: 25,
+    rewardFirst: 1500, rewardReplay: 300 },
+  { id: 'ghosts', name: '유령의 밤', flag: '🎃', desc: '하늘에 뜬 유령냥코들이 몰려온다', unlockAt: 25, scene: 'night',
+    towerHp: 1700, spawnStart: 3, spawnMin: 1.8, enemyMult: 1.6, pool: [['ghost', 3], ['bird', 1], ['cat', 2]], bossAt: 0.5, bossType: 'ghost', bossMult: 3,
+    rewardFirst: 1800, rewardReplay: 400 },
+  { id: 'pirates', name: '해적선 습격', flag: '🏴‍☠️', desc: '해적냥코와 물고기냥코의 합동 공격', unlockAt: 30, scene: 'bermuda',
+    towerHp: 2000, spawnStart: 3, spawnMin: 1.7, enemyMult: 1.8, pool: [['pirate', 3], ['fish', 1], ['cat', 1]], bossAt: 0.5, bossType: 'pirate', bossMult: 3,
+    rewardFirst: 2000, rewardReplay: 450 },
+  { id: 'cyclone', name: '거대 싸이클론', flag: '🌪️', desc: '빠르고 강한 소용돌이가 몰아친다', unlockAt: 35, scene: 'storm',
+    towerHp: 1800, spawnStart: 8, spawnMin: 6, enemyMult: 3, pool: [['cat', 2], ['cow', 1]], bossAt: 0, startBoss: true, bossType: 'cyclone', bossMult: 3,
+    rewardFirst: 2500, rewardReplay: 500 },
+  { id: 'bossrush', name: '보스 러시', flag: '👑', desc: '30초마다 거신·쥬라·UFO·발키리·냥코무트가 차례로!', unlockAt: 48, scene: 'moon',
+    towerHp: 3000, spawnStart: 3, spawnMin: 1.6, enemyMult: 1.5, pool: enemyPool('eoc', 40), bossAt: 0, bossEvery: 30, bossCycle: ['titan', 'jurassic', 'ufo', 'valkyrie', 'bahamut'], bossMult: 1.3,
+    rewardFirst: 4000, rewardReplay: 800 },
+  { id: 'mecha', name: '메카 군단', flag: '🤖', desc: '범위 공격을 쏘는 메카냥코 부대', unlockAt: 48, scene: 'nasa',
+    towerHp: 2600, spawnStart: 3.2, spawnMin: 1.8, enemyMult: 1.7, pool: [['mecha', 2], ['ufo', 1], ['cat', 2]], bossAt: 0.6, bossType: 'mecha', bossMult: 3,
+    rewardFirst: 3500, rewardReplay: 700 },
+];
+
+const STAGES = [];
+for (const [ch, route] of [['eoc', EOC_ROUTE], ['itf', ITF_ROUTE], ['itf2', ITF_ROUTE]]) {
+  route.forEach((place, i) => {
+    const [name, flag] = PLACES[place];
+    const [bossType, bossMult] = bossFor(ch, i + 1);
+    const s = { id: `${ch}-${i}`, chapter: ch, num: i + 1, name, flag, scene: place, startMoney: 250,
+      pool: enemyPool(ch, i + 1), bossType, bossMult, ...chapterParams(ch, i) };
+    if (place === 'moon') s.startBoss = true;
+    STAGES.push(s);
+  });
+}
+for (const ev of EVENTS) STAGES.push({ ...ev, id: 'ev-' + ev.id, evId: ev.id, chapter: 'event', startMoney: 250 });
+const CHAPTER_LEN = { eoc: EOC_ROUTE.length, itf: ITF_ROUTE.length, itf2: ITF_ROUTE.length };
+// Story chapters in play order; each one opens when the previous is fully cleared.
+const STORY = ['eoc', 'itf', 'itf2'];
+function chapterLocked(ch) {
+  const i = STORY.indexOf(ch);
+  return i > 0 && save.progress[STORY[i - 1]] < CHAPTER_LEN[STORY[i - 1]];
+}
+
+function isUnlocked(s) {
+  if (s.chapter !== 'event') return !chapterLocked(s.chapter) && s.num - 1 <= save.progress[s.chapter];
+  return save.progress.eoc >= s.unlockAt;
+}
+function isCleared(s) {
+  if (s.chapter === 'event') return !!save.events[s.evId];
+  return s.num <= save.progress[s.chapter];
+}
+// Bones earned per battle.
+function battleReward(s, won, firstClear) {
+  if (!won) return 30;
+  return firstClear ? s.rewardFirst : s.rewardReplay;
+}
+
+// Worker: each level raises wallet size and income.
+const WORKER_MAX = 8;
+function walletMax() { return 400 + 200 * workerLv; }
+function incomePerSec() { return 10 + 4 * workerLv; }
+function workerCost() { return 30 * workerLv; }
+
+// ---- Save data ----
+const SAVE_KEY = 'dogSquad.save';
+// Unit ids from the all-dogs version, mapped to their replacements of the same rarity.
+const OLD_IDS = { pug: 'doggo', bulldog: 'hippo', sniper: 'snake', chihuahua: 'pig', corgi: 'sheep', shiba: 'squirrel', husky: 'kangaroo', shepherd: 'gorilla', jindo: 'rhino' };
+function defaultSave() {
+  return { bones: 500, progress: { eoc: 0, itf: 0, itf2: 0 }, events: {}, seen: {}, owned: { doggo: 1, snake: 1, hippo: 1 }, squad: ['doggo', 'snake', 'hippo'] };
+}
+function loadSave() {
+  const save = defaultSave();
+  try {
+    const raw = JSON.parse(localStorage.getItem(SAVE_KEY));
+    if (raw && typeof raw === 'object') {
+      const fix = id => OLD_IDS[id] || id;
+      if (Number.isFinite(raw.bones)) save.bones = raw.bones;
+      if (raw.progress) {
+        save.progress.eoc = Math.min(CHAPTER_LEN.eoc, raw.progress.eoc | 0);
+        save.progress.itf = Math.min(CHAPTER_LEN.itf, raw.progress.itf | 0);
+        save.progress.itf2 = Math.min(CHAPTER_LEN.itf2, raw.progress.itf2 | 0);
+      } else if (Number.isFinite(raw.cleared)) {
+        save.progress.eoc = raw.cleared;  // from the 4-stage version
+      }
+      if (raw.events && typeof raw.events === 'object') save.events = raw.events;
+      if (raw.seen && typeof raw.seen === 'object') save.seen = raw.seen;
+      if (raw.owned) for (const id in raw.owned) {
+        const nid = fix(id);
+        if (UNIT_TYPES[nid]) save.owned[nid] = Math.max(save.owned[nid] || 0, raw.owned[id]);
+      }
+      if (Array.isArray(raw.squad)) {
+        const squad = [...new Set(raw.squad.map(fix))].filter(id => save.owned[id]).slice(0, MAX_SQUAD);
+        if (squad.length) save.squad = squad;
+      }
+    }
+  } catch (e) {}
+  return save;
+}
+function persist() {
+  try { localStorage.setItem(SAVE_KEY, JSON.stringify(save)); } catch (e) {}
+}
+const save = loadSave();
+
+function levelMult(id) { return 1 + 0.1 * ((save.owned[id] || 1) - 1); }
+
+// ---- Doodle drawing ----
+// Characters are drawn in a 40-unit box facing +x with feet at y=0, then scaled and mirrored.
+const OUT = '#111';
+
+function outlinedStroke(c, color, w, build) {
+  build();
+  c.lineWidth = w + 2.6; c.strokeStyle = OUT; c.stroke();
+  c.lineWidth = w; c.strokeStyle = color; c.stroke();
+}
+function blob(c, fill, build) {
+  c.beginPath(); build();
+  c.fillStyle = fill; c.fill();
+  c.lineWidth = 2.2; c.strokeStyle = OUT; c.stroke();
+}
+// Silhouette: stroke a thick outline first, then fill over it, so overlapping shapes
+// in one path merge into a single outlined blob (the flat Battle Cats look).
+function silhouette(c, fill, build) {
+  c.beginPath(); build();
+  c.lineWidth = 4.6; c.strokeStyle = OUT; c.stroke();
+  c.fillStyle = fill; c.fill();
+}
+function ell(c, x, y, rx, ry, rot = 0) {
+  c.moveTo(x + rx * Math.cos(rot), y + rx * Math.sin(rot));
+  c.ellipse(x, y, rx, ry, rot, 0, Math.PI * 2);
+}
+// Paint inside a silhouette without covering its outline.
+function paintInside(c, clipBuild, paint) {
+  c.save();
+  c.beginPath(); clipBuild(); c.clip();
+  paint();
+  c.restore();
+}
+// Everyone is drawn in side profile, so one small dot eye.
+function eye(c, x, y, color) {
+  c.fillStyle = color || OUT;
+  c.beginPath(); c.ellipse(x, y, 1.7, 2.1, 0, 0, Math.PI * 2); c.fill();
+}
+
+function drawCritter(c, x, y, size, look, phase, facing, walking) {
+  c.save();
+  c.translate(x, y);
+  const k = size / 40;
+  c.scale(facing * k, k);
+  c.lineJoin = 'round'; c.lineCap = 'round';
+  if (look.aura) {
+    const g = c.createRadialGradient(0, -18, 4, 0, -18, 38);
+    g.addColorStop(0, 'rgba(255,230,110,0.75)');
+    g.addColorStop(1, 'rgba(255,230,110,0)');
+    c.fillStyle = g;
+    c.beginPath(); c.arc(0, -18, 38, 0, Math.PI * 2); c.fill();
+  }
+  if (look.kind === 'sprite' && !ready(IMAGES[look.img])) look = look.fallback;
+  const drawer = { sprite: drawSprite, snake: drawSnake, ape: drawApe, hopper: drawHopper, cyclone: drawCyclone, blobcat: drawBlobCat, fishcat: drawFishCat, jurassic: drawJurassic, ufo: drawUfo }[look.kind] || drawQuad;
+  drawer(c, look, phase, walking);
+  c.restore();
+}
+
+// Four-legged animals (and the cats).
+function drawQuad(c, look, phase, walking) {
+  const isCat = look.kind === 'cat';
+  const legLen = 8 * (look.legs || 1);
+  const bob = walking ? Math.abs(Math.sin(phase)) * 1.6 : Math.sin(phase) * 0.6;
+  const by = -legLen - 8 - bob;
+  const rx = look.wide ? 17 : 15, ry = look.wide ? 10 : 8.5;
+  const hr = look.headR || 11;
+  const hx = rx - 4, hy = by - 9 - (hr - 11) * 0.6;
+  const headCol = look.headColor || look.body;
+  const snLen = isCat || look.noSnout ? 0 : look.bigSnout ? 9 : look.pigNose ? 5 : 7;
+  const snRy = look.bigSnout ? hr * 0.62 : hr * 0.48;
+  const snX = hx + hr * 0.62, snY = hy + hr * 0.3;
+  const tipX = snX + snLen;
+  const bodyPath = () => ell(c, -1, by, rx, ry);
+  const headPath = () => { ell(c, hx, hy, hr * 1.05, hr * 0.92); if (snLen) ell(c, snX, snY, snLen, snRy); };
+
+  // tail
+  if (look.tail === 'bushy') {
+    silhouette(c, look.body, () => ell(c, -rx - 5, by - 13, 8, 14, -0.35));
+  } else {
+    outlinedStroke(c, look.body, 4, () => {
+      c.beginPath(); c.moveTo(-rx + 1, by - 2);
+      if (look.tail === 'curl') c.bezierCurveTo(-rx - 11, by - 6, -rx - 11, by - 18, -rx - 1, by - 15);
+      else if (look.tail === 'stub') c.lineTo(-rx - 4, by - 5);
+      else if (look.tail === 'cat') c.bezierCurveTo(-rx - 13, by - 2, -rx - 15, by - 20, -rx - 7, by - 26);
+      else c.quadraticCurveTo(-rx - 9, by - 6, -rx - 11, by - 14);
+    });
+  }
+
+  // stubby straight legs
+  const legX = [-rx + 4, -rx + 10, rx - 10, rx - 4];
+  legX.forEach((lx, i) => {
+    const swing = walking ? Math.sin(phase + (i % 2) * Math.PI) * 3.5 : 0;
+    outlinedStroke(c, look.legColor || look.body, 4.8, () => { c.beginPath(); c.moveTo(lx, by + 3); c.lineTo(lx + swing, -1.4); });
+  });
+
+  if (look.spikes) for (const sx of [-10, -3, 4]) silhouette(c, look.spikes, () => { c.moveTo(sx - 4, by - ry + 2); c.lineTo(sx, by - ry - 7); c.lineTo(sx + 4, by - ry + 2); c.closePath(); });
+
+  // body
+  if (look.wool) {
+    silhouette(c, look.body, () => {
+      bodyPath();
+      for (let a = 0; a < 10; a++) {
+        const ang = a * Math.PI / 5;
+        ell(c, -1 + Math.cos(ang) * rx * 0.85, by + Math.sin(ang) * ry * 0.8, 5.5, 5.5);
+      }
+    });
+  } else {
+    silhouette(c, look.body, bodyPath);
+  }
+  if (look.belly) paintInside(c, bodyPath, () => { c.fillStyle = look.belly; c.fillRect(-rx, by + 3, rx * 2, 10); });
+  if (look.spots) paintInside(c, bodyPath, () => { c.fillStyle = look.spots; for (const [sx, sy, r] of [[-8, -3, 4], [2, 2, 3.2], [8, -4, 2.6]]) { c.beginPath(); c.ellipse(sx, by + sy, r * 1.3, r, 0, 0, Math.PI * 2); c.fill(); } });
+  if (look.stripes) paintInside(c, bodyPath, () => {
+    c.strokeStyle = look.stripes; c.lineWidth = 2.4;
+    for (const sx of [-9, -3, 3]) { c.beginPath(); c.moveTo(sx, by - ry); c.lineTo(sx + 2, by - 2); c.stroke(); }
+  });
+
+  // ears behind the head
+  const earCol = look.earColor || headCol;
+  if (isCat) {
+    for (const ox of [-hr * 0.55, hr * 0.2]) {
+      silhouette(c, earCol, () => { c.moveTo(hx + ox - 4, hy - hr * 0.6); c.lineTo(hx + ox, hy - hr - 8); c.lineTo(hx + ox + 5, hy - hr * 0.7); c.closePath(); });
+    }
+  } else if (look.ear === 'pointy') {
+    silhouette(c, earCol, () => { c.moveTo(hx - hr * 0.75, hy - hr * 0.45); c.lineTo(hx - hr * 0.45, hy - hr - 8); c.lineTo(hx + hr * 0.2, hy - hr * 0.75); c.closePath(); });
+  } else if (look.ear === 'nub') {
+    silhouette(c, earCol, () => ell(c, hx - hr * 0.4, hy - hr * 0.85, 3.2, 3.2));
+  }
+
+  // head (with the snout merged into one outline)
+  silhouette(c, headCol, headPath);
+  if (look.face) paintInside(c, headPath, () => { c.fillStyle = look.face; c.fillRect(hx - hr * 1.2, hy + 2, hr * 2.5 + snLen + 4, hr + 4); });
+
+  c.strokeStyle = OUT;
+  if (isCat) {
+    eye(c, hx + hr * 0.45, hy - 1);
+    c.lineWidth = 2;
+    c.beginPath(); c.moveTo(hx + hr * 0.05, hy - 6.5); c.lineTo(hx + hr * 0.8, hy - 3.5); c.stroke();
+    c.fillStyle = '#ff8aa0';
+    c.beginPath(); c.arc(hx + hr * 1.0, hy + 2.5, 1.6, 0, Math.PI * 2); c.fill();
+    c.lineWidth = 1.2;
+    c.beginPath();
+    c.moveTo(hx + hr * 0.9, hy + 4); c.lineTo(hx + hr * 0.9 + 9, hy + 2);
+    c.moveTo(hx + hr * 0.9, hy + 5.5); c.lineTo(hx + hr * 0.9 + 9, hy + 7);
+    c.stroke();
+    c.lineWidth = 1.5;
+    c.beginPath(); c.moveTo(hx + hr * 0.45, hy + 6); c.lineTo(hx + hr * 0.85, hy + 6.5); c.stroke();
+    if (look.scar) {
+      c.strokeStyle = '#d9331a'; c.lineWidth = 1.8;
+      c.beginPath(); c.moveTo(hx + hr * 0.6, hy - 7); c.lineTo(hx + hr * 0.3, hy + 4); c.stroke();
+    }
+  } else {
+    if (look.pigNose) {
+      silhouette(c, look.pigNose, () => ell(c, tipX, snY, 2.6, snRy * 0.95));
+      c.fillStyle = '#a0405a';
+      c.beginPath(); c.ellipse(tipX + 0.4, snY, 0.9, 1.5, 0, 0, Math.PI * 2); c.fill();
+    } else if (look.bigSnout) {
+      c.fillStyle = OUT;
+      c.beginPath(); c.arc(tipX - 2.5, snY - snRy * 0.45, 1.2, 0, Math.PI * 2); c.fill();
+    } else if (snLen) {
+      c.fillStyle = OUT;
+      c.beginPath(); c.ellipse(tipX - 0.8, snY - snRy * 0.5, 2.1, 1.7, 0, 0, Math.PI * 2); c.fill();
+    }
+    if (snLen) {
+      c.lineWidth = 1.4;
+      c.beginPath(); c.moveTo(snX - 1, snY + snRy * 0.45); c.lineTo(tipX - 1.5, snY + snRy * 0.3); c.stroke();
+    }
+    if (look.horn) silhouette(c, '#f4efe0', () => { c.moveTo(tipX - 7, snY - snRy * 0.8); c.lineTo(tipX + 1, snY - snRy - 12); c.lineTo(tipX - 1, snY - snRy * 0.5); c.closePath(); });
+    if (look.eyePatch) { c.fillStyle = look.eyePatch; c.beginPath(); c.ellipse(hx + hr * 0.3, hy - hr * 0.12, 4, 5, 0.3, 0, Math.PI * 2); c.fill(); }
+    eye(c, hx + hr * 0.3, hy - hr * 0.18, look.eyeColor);
+    if (look.trunk) outlinedStroke(c, look.body, 5.5, () => { c.beginPath(); c.moveTo(hx + hr * 0.85, hy + 1); c.quadraticCurveTo(hx + hr * 1.5, hy + 6, hx + hr * 1.35, by + 6); });
+    if (look.ear === 'fan') silhouette(c, earCol, () => ell(c, hx - hr * 0.3, hy + 2, 7.5, 10.5, 0.2));
+    if (look.ear === 'flop') silhouette(c, earCol, () => ell(c, hx - hr * 0.35, hy + 1, 3.6, 7, 0.25));
+  }
+
+  if (look.crown) {
+    silhouette(c, '#ffd54a', () => {
+      const cy = hy - hr + 1;
+      c.moveTo(hx - 7, cy); c.lineTo(hx - 8, cy - 9); c.lineTo(hx - 3.5, cy - 5); c.lineTo(hx, cy - 11);
+      c.lineTo(hx + 3.5, cy - 5); c.lineTo(hx + 8, cy - 9); c.lineTo(hx + 7, cy); c.closePath();
+    });
+  }
+}
+
+// One of your images, bobbing and squashing as it walks.
+function drawSprite(c, look, phase, walking) {
+  const img = IMAGES[look.img];
+  const h = look.height, w = h * img.naturalWidth / img.naturalHeight;
+  const hop = walking ? Math.abs(Math.sin(phase)) * 3 : 0;
+  const squash = 1 + (walking ? Math.sin(phase * 2) : Math.sin(phase)) * 0.04;
+  c.save();
+  c.translate(0, -hop);
+  c.scale(1 / squash, squash);
+  c.drawImage(img, -w / 2, -h, w, h);
+  c.restore();
+}
+
+// ---- Enemy cats (Battle Cats style: white blobs, black outlines, facing the camera) ----
+function catEars(c, cx, cy, rx, ry, col) {
+  for (const s of [-1, 1]) {
+    silhouette(c, col, () => { c.moveTo(cx + s * rx * 0.8, cy - ry * 0.45); c.lineTo(cx + s * rx * 0.62, cy - ry - 7); c.lineTo(cx + s * rx * 0.12, cy - ry * 0.92); c.closePath(); });
+  }
+}
+function catFace(c, cx, cy, look) {
+  const eyeCol = look.glowEyes || OUT;
+  eye(c, cx - 4, cy, eyeCol); eye(c, cx + 4, cy, eyeCol);
+  c.strokeStyle = OUT; c.lineWidth = 1.5;
+  if (look.angry) { c.beginPath(); c.moveTo(cx - 7, cy - 5); c.lineTo(cx - 2, cy - 3); c.moveTo(cx + 7, cy - 5); c.lineTo(cx + 2, cy - 3); c.stroke(); }
+  if (look.beak) { silhouette(c, '#ffae00', () => { c.moveTo(cx - 3, cy + 3); c.lineTo(cx + 3, cy + 3); c.lineTo(cx, cy + 8); c.closePath(); }); return; }
+  c.beginPath(); c.moveTo(cx - 3.5, cy + 4); c.quadraticCurveTo(cx - 1.8, cy + 6.5, cx, cy + 4); c.quadraticCurveTo(cx + 1.8, cy + 6.5, cx + 3.5, cy + 4); c.stroke();
+}
+
+// Upright blob cat: the basic Battle Cats body shape, dressed up by look flags.
+function drawBlobCat(c, look, phase, walking) {
+  const wide = look.wide || 1;
+  const bob = walking ? Math.abs(Math.sin(phase)) * 2 : Math.sin(phase) * 0.6;
+  const rx = 12 * wide, ry = 15, cy = -ry - 3 - bob;
+  const body = look.body || '#fff';
+  const bodyPath = () => ell(c, 0, cy, rx, ry);
+
+  if (look.wings) {
+    const flap = Math.sin(phase * (look.fly ? 2.5 : 1)) * 5;
+    silhouette(c, look.wings, () => {
+      c.moveTo(-rx * 0.4, cy - 2); c.quadraticCurveTo(-rx - 16, cy - 26 - flap, -rx - 22, cy - 4 - flap);
+      c.quadraticCurveTo(-rx - 10, cy - 4, -rx * 0.3, cy + 8); c.closePath();
+    });
+  }
+  if (look.arms) {
+    const sw = walking ? Math.sin(phase) * 3 : 0;
+    outlinedStroke(c, body, 6, () => { c.beginPath(); c.moveTo(rx - 3, cy); c.lineTo(rx + 6, cy + 10 + sw); });
+    outlinedStroke(c, body, 6, () => { c.beginPath(); c.moveTo(-rx + 3, cy); c.lineTo(-rx - 6, cy + 10 - sw); });
+  }
+  const sw = walking ? Math.sin(phase) * 3 : 0;
+  for (const [lx, d] of [[-rx * 0.45, sw], [rx * 0.45, -sw]]) silhouette(c, body, () => ell(c, lx + d, -2.5, 3.5, 2.6));
+  if (look.horns) for (const s of [-1, 1]) silhouette(c, look.horns, () => { c.moveTo(s * rx * 0.3, cy - ry + 2); c.quadraticCurveTo(s * rx * 1.1, cy - ry - 4, s * rx * 1.2, cy - ry - 14); c.lineTo(s * rx * 0.55, cy - ry * 0.75); c.closePath(); });
+  catEars(c, 0, cy, rx, ry, body);
+  silhouette(c, body, bodyPath);
+
+  if (look.belt) paintInside(c, bodyPath, () => { c.fillStyle = look.belt; c.fillRect(-rx, cy + ry * 0.35, rx * 2, 6); });
+  if (look.armor) paintInside(c, bodyPath, () => { c.fillStyle = look.armor; c.fillRect(-rx, cy + 5, rx * 2, ry); });
+  if (look.mask) paintInside(c, bodyPath, () => { c.fillStyle = look.mask; c.fillRect(-rx, cy - ry, rx * 2, ry * 0.7); c.fillRect(-rx, cy - 3, rx * 2, 6); });
+  if (look.headband) paintInside(c, bodyPath, () => { c.fillStyle = look.headband; c.fillRect(-rx, cy - ry * 0.62, rx * 2, 4); });
+  catFace(c, 0, cy - 2, look);
+
+  if (look.helmet) {
+    silhouette(c, look.helmet, () => { c.moveTo(-rx * 0.85, cy - ry * 0.55); c.quadraticCurveTo(0, cy - ry - 10, rx * 0.85, cy - ry * 0.55); c.closePath(); });
+    if (look.helmetWings) for (const s of [-1, 1]) silhouette(c, '#fff', () => { c.moveTo(s * rx * 0.7, cy - ry * 0.7); c.lineTo(s * (rx + 10), cy - ry - 10); c.lineTo(s * (rx + 2), cy - ry * 0.45); c.closePath(); });
+  }
+  if (look.axe) {
+    outlinedStroke(c, '#8a5a2a', 2.5, () => { c.beginPath(); c.moveTo(rx - 2, cy + 8); c.lineTo(rx + 6, cy - 14); });
+    silhouette(c, '#c8ccd4', () => { c.moveTo(rx + 4, cy - 10); c.quadraticCurveTo(rx + 16, cy - 16, rx + 12, cy - 4); c.closePath(); });
+  }
+  if (look.spear) {
+    outlinedStroke(c, '#c8a040', 2.2, () => { c.beginPath(); c.moveTo(rx - 4, cy + 12); c.lineTo(rx + 14, cy - 26); });
+    silhouette(c, '#e8eef6', () => { c.moveTo(rx + 12, cy - 22); c.lineTo(rx + 19, cy - 34); c.lineTo(rx + 17, cy - 20); c.closePath(); });
+  }
+}
+
+// Cat head on a fish body.
+function drawFishCat(c, look, phase, walking) {
+  const bob = walking ? Math.sin(phase) * 1.5 : 0;
+  const by = -12 + bob;
+  silhouette(c, look.fin, () => { c.moveTo(-16, by); c.lineTo(-28, by - 9); c.lineTo(-26, by + 9); c.closePath(); });
+  silhouette(c, look.fin, () => { c.moveTo(-4, by - 8); c.lineTo(4, by - 16); c.lineTo(8, by - 7); c.closePath(); });
+  silhouette(c, look.body, () => ell(c, -2, by, 17, 9));
+  c.strokeStyle = 'rgba(0,0,0,0.3)'; c.lineWidth = 1.2;
+  for (const x of [-12, -6, 0]) { c.beginPath(); c.arc(x, by, 5, -0.9, 0.9); c.stroke(); }
+  catEars(c, 14, by - 8, 9, 9, '#fff');
+  silhouette(c, '#fff', () => ell(c, 14, by - 8, 9, 9));
+  catFace(c, 14, by - 9, look);
+}
+
+// Little blob cat riding a dinosaur.
+function drawJurassic(c, look, phase, walking) {
+  const sw = walking ? Math.sin(phase) * 4 : 0;
+  const bob = walking ? Math.abs(Math.sin(phase)) * 1.5 : 0;
+  outlinedStroke(c, look.dino, 6, () => { c.beginPath(); c.moveTo(-14, -18 - bob); c.quadraticCurveTo(-26, -16, -34, -8); });
+  for (const [lx, d] of [[-6, sw], [6, -sw]]) outlinedStroke(c, look.dino, 6, () => { c.beginPath(); c.moveTo(lx, -14 - bob); c.lineTo(lx + d, -1.5); });
+  silhouette(c, look.dino, () => { ell(c, 0, -20 - bob, 16, 10); ell(c, 17, -32 - bob, 10, 7); ell(c, 22, -29 - bob, 8, 4); });
+  c.strokeStyle = OUT; c.lineWidth = 1.4;
+  c.beginPath(); c.moveTo(16, -27 - bob); c.lineTo(29, -28 - bob); c.stroke();
+  eye(c, 18, -35 - bob);
+  c.save(); c.translate(-4, -28 - bob); c.scale(0.5, 0.5);
+  drawBlobCat(c, { angry: true }, phase, false);
+  c.restore();
+}
+
+// Flying saucer with a cat pilot.
+function drawUfo(c, look, phase) {
+  const hover = Math.sin(phase * 1.3) * 2;
+  c.save(); c.translate(0, hover);
+  silhouette(c, 'rgba(190,240,255,0.9)', () => ell(c, 0, -18, 11, 11));
+  c.save(); c.translate(0, -9); c.scale(0.45, 0.45); drawBlobCat(c, {}, phase, false); c.restore();
+  silhouette(c, '#b8c0cc', () => ell(c, 0, -9, 22, 6));
+  for (const x of [-14, -5, 5, 14]) C2(c, Math.sin(phase * 3 + x) > 0 ? '#ffe25a' : '#ff5a3c', x, -8, 1.6);
+  c.restore();
+}
+function C2(c, color, x, y, r) { c.fillStyle = color; c.beginPath(); c.arc(x, y, r, 0, Math.PI * 2); c.fill(); }
+
+// Spinning whirlwind with angry eyes (the 거대 싸이클론 event boss).
+function drawCyclone(c, look, phase) {
+  const spin = performance.now() / 90;
+  for (let i = 0; i < 7; i++) {
+    const off = Math.sin(spin + i * 0.9) * 3;
+    silhouette(c, i % 2 ? '#d4d6e6' : '#f4f4ff', () => ell(c, off, -4 - i * 6.5, 5 + i * 3, 3.6));
+  }
+  const off = Math.sin(spin + 3 * 0.9) * 3;
+  c.strokeStyle = OUT; c.lineWidth = 2;
+  c.beginPath(); c.moveTo(off - 8, -30); c.lineTo(off - 2, -27); c.moveTo(off + 8, -30); c.lineTo(off + 2, -27); c.stroke();
+  eye(c, off - 4, -24); eye(c, off + 4, -24);
+}
+
+// Long flat snake with its head slightly raised.
+function drawSnake(c, look, phase, walking) {
+  const wave = walking ? phase * 1.4 : phase * 0.4;
+  const pts = [];
+  for (let i = 0; i <= 12; i++) pts.push([-26 + i * 2.8, -5.5 + Math.sin(wave + i * 0.8) * 2.2 * (0.3 + i / 12)]);
+  const hy = -15 + Math.sin(wave) * 1;
+  outlinedStroke(c, look.body, 9, () => {
+    c.beginPath(); c.moveTo(pts[0][0], pts[0][1]);
+    for (const [x, y] of pts) c.lineTo(x, y);
+    c.quadraticCurveTo(11, -6, 11, hy + 3);
+  });
+  silhouette(c, look.body, () => ell(c, 15, hy, 10, 6));
+  eye(c, 18, hy - 2);
+  c.strokeStyle = OUT; c.lineWidth = 1.4;
+  c.beginPath(); c.moveTo(16, hy + 2.5); c.lineTo(24, hy + 2); c.stroke();
+  if (Math.sin(phase * 2.2) > 0.2) {
+    c.strokeStyle = '#e0331a';
+    c.beginPath(); c.moveTo(25, hy + 1.5); c.lineTo(29, hy + 1.5); c.lineTo(31, hy - 0.5); c.moveTo(29, hy + 1.5); c.lineTo(31, hy + 3.5); c.stroke();
+  }
+}
+
+// Knuckle-walking gorilla.
+function drawApe(c, look, phase, walking) {
+  const sw = walking ? Math.sin(phase) : 0;
+  const bob = walking ? Math.abs(Math.sin(phase)) * 1.5 : Math.sin(phase) * 0.6;
+  outlinedStroke(c, look.body, 6, () => { c.beginPath(); c.moveTo(-3, -30 - bob); c.quadraticCurveTo(-10, -16, -6 - sw * 4, -1.5); });
+  for (const s of [-1, 1]) outlinedStroke(c, look.body, 6.5, () => { c.beginPath(); c.moveTo(-3 + s * 4, -12 - bob); c.lineTo(-3 + s * 4 + s * sw * 2, -1.5); });
+  const hx = 9, hy = -38 - bob;
+  const torso = () => ell(c, 0, -22 - bob, 13, 13);
+  silhouette(c, look.body, () => { torso(); ell(c, hx, hy, 8.5, 8); });
+  silhouette(c, look.face, () => ell(c, hx + 4, hy + 1.5, 5, 5.5));
+  c.strokeStyle = OUT; c.lineWidth = 2.2;
+  c.beginPath(); c.moveTo(hx + 1, hy - 4); c.lineTo(hx + 9, hy - 3.5); c.stroke();
+  eye(c, hx + 5, hy - 1);
+  c.lineWidth = 1.4;
+  c.beginPath(); c.moveTo(hx + 4, hy + 4.5); c.lineTo(hx + 8, hy + 4); c.stroke();
+  outlinedStroke(c, look.body, 7, () => { c.beginPath(); c.moveTo(8, -30 - bob); c.quadraticCurveTo(19, -18, 15 + sw * 4, -2); });
+  silhouette(c, look.body, () => ell(c, 15 + sw * 4, -3.5, 4, 4));
+}
+
+// Hopping kangaroo with boxing gloves.
+function drawHopper(c, look, phase, walking) {
+  const y0 = walking ? -Math.abs(Math.sin(phase * 0.8)) * 7 : 0;
+  outlinedStroke(c, look.body, 5, () => { c.beginPath(); c.moveTo(-6, y0 - 10); c.quadraticCurveTo(-18, y0 - 4, -26, y0 - 1); });
+  const hx = 8, hy = y0 - 38;
+  silhouette(c, look.body, () => { c.moveTo(hx - 4, hy - 3); c.lineTo(hx - 6, hy - 17); c.lineTo(hx + 2, hy - 5); c.closePath(); });
+  const torso = () => ell(c, 2, y0 - 22, 8, 13, 0.25);
+  silhouette(c, look.body, () => {
+    ell(c, 4, y0 - 2.5, 10, 3.5);
+    ell(c, -2, y0 - 10, 8, 8);
+    torso();
+    ell(c, hx + 2, hy, 7, 6);
+    ell(c, hx + 8, hy + 2, 5, 3.4);
+  });
+  paintInside(c, torso, () => { c.fillStyle = look.belly; c.beginPath(); c.ellipse(6, y0 - 20, 4.5, 10, 0.25, 0, Math.PI * 2); c.fill(); });
+  c.fillStyle = OUT; c.beginPath(); c.arc(hx + 12.2, hy + 0.8, 1.4, 0, Math.PI * 2); c.fill();
+  eye(c, hx + 4, hy - 2);
+  outlinedStroke(c, look.body, 3.5, () => { c.beginPath(); c.moveTo(5, y0 - 29); c.lineTo(12, y0 - 24); });
+  silhouette(c, look.gloves, () => ell(c, 13, y0 - 24, 4.5, 4.5));
+}
+
+function drawBone(c, x, y) {
+  c.save(); c.translate(x, y);
+  c.lineWidth = 2.2; c.strokeStyle = OUT; c.fillStyle = '#fff';
+  c.beginPath();
+  for (const [bx, by] of [[-11, -4], [-11, 4], [11, -4], [11, 4]]) { c.moveTo(bx + 5, by); c.arc(bx, by, 5, 0, Math.PI * 2); }
+  c.fill(); c.stroke();
+  c.fillRect(-11, -4, 22, 8); c.beginPath(); c.moveTo(-8, -4); c.lineTo(8, -4); c.moveTo(-8, 4); c.lineTo(8, 4); c.stroke();
+  c.restore();
+}
+
+function outlinedText(c, text, x, y, px, fill) {
+  c.font = `${px}px ${FONT}`;
+  c.textAlign = 'center';
+  c.lineJoin = 'round';
+  c.lineWidth = Math.max(3, px / 4.5);
+  c.strokeStyle = OUT;
+  c.strokeText(text, x, y);
+  c.fillStyle = fill;
+  c.fillText(text, x, y);
+}
+
+const BASE_H = 185;
+function drawBaseImage(c, img, x, g) {
+  const w = BASE_H * img.naturalWidth / img.naturalHeight;
+  c.drawImage(img, x - w / 2, g - BASE_H, w, BASE_H);
+}
+
+function drawDogBase(c, x, g, shake) {
+  x += shake > 0 ? (Math.random() - 0.5) * 6 : 0;
+  if (ready(IMAGES.dogTower)) return drawBaseImage(c, IMAGES.dogTower, x, g);
+  c.save();
+  c.lineWidth = 3; c.strokeStyle = OUT; c.lineJoin = 'round';
+  c.fillStyle = '#f6e7c8';
+  c.fillRect(x - 42, g - 84, 84, 84); c.strokeRect(x - 42, g - 84, 84, 84);
+  c.strokeStyle = 'rgba(0,0,0,0.18)'; c.lineWidth = 2;
+  for (let py = g - 70; py < g; py += 14) { c.beginPath(); c.moveTo(x - 40, py); c.lineTo(x + 40, py); c.stroke(); }
+  c.strokeStyle = OUT; c.lineWidth = 3;
+  c.fillStyle = '#e0452b';
+  c.beginPath(); c.moveTo(x - 56, g - 80); c.lineTo(x, g - 134); c.lineTo(x + 56, g - 80); c.closePath(); c.fill(); c.stroke();
+  c.fillStyle = '#3a2616';
+  c.beginPath(); c.moveTo(x - 19, g); c.lineTo(x - 19, g - 34); c.arc(x, g - 34, 19, Math.PI, 0); c.lineTo(x + 19, g); c.fill(); c.stroke();
+  c.beginPath(); c.moveTo(x, g - 134); c.lineTo(x, g - 162); c.stroke();
+  c.fillStyle = '#3aa0ff';
+  c.beginPath(); c.moveTo(x, g - 162); c.lineTo(x - 24, g - 154); c.lineTo(x, g - 146); c.closePath(); c.fill(); c.stroke();
+  c.restore();
+  drawBone(c, x, g - 100);
+}
+
+function drawCatBase(c, x, g, shake) {
+  x += shake > 0 ? (Math.random() - 0.5) * 6 : 0;
+  if (ready(IMAGES.catTower)) return drawBaseImage(c, IMAGES.catTower, x, g);
+  c.save();
+  c.lineWidth = 3; c.strokeStyle = OUT; c.lineJoin = 'round';
+  c.fillStyle = '#8a82a0';
+  for (const s of [-1, 1]) {
+    c.beginPath(); c.moveTo(x + s * 38, g - 118); c.lineTo(x + s * 30, g - 152); c.lineTo(x + s * 10, g - 118); c.closePath(); c.fill(); c.stroke();
+  }
+  c.fillStyle = '#b9b3c9';
+  c.fillRect(x - 40, g - 122, 80, 122); c.strokeRect(x - 40, g - 122, 80, 122);
+  c.strokeStyle = 'rgba(0,0,0,0.2)'; c.lineWidth = 2;
+  for (let row = 0, py = g - 104; py < g; py += 18, row++) {
+    c.beginPath(); c.moveTo(x - 38, py); c.lineTo(x + 38, py); c.stroke();
+    for (let px = x - 40 + (row % 2) * 13; px < x + 38; px += 26) { c.beginPath(); c.moveTo(px, py); c.lineTo(px, py + 18); c.stroke(); }
+  }
+  c.strokeStyle = OUT; c.lineWidth = 3;
+  c.fillStyle = '#2a2236';
+  c.fillRect(x - 30, g - 106, 60, 26); c.strokeRect(x - 30, g - 106, 60, 26);
+  c.fillStyle = '#ffe25a';
+  for (const s of [-1, 1]) { c.beginPath(); c.ellipse(x + s * 14, g - 93, 9, 7, 0, 0, Math.PI * 2); c.fill(); }
+  c.fillStyle = OUT;
+  for (const s of [-1, 1]) c.fillRect(x + s * 14 - 1.5, g - 99, 3, 12);
+  c.fillStyle = '#2a2236';
+  c.beginPath(); c.moveTo(x - 17, g); c.lineTo(x - 17, g - 32); c.arc(x, g - 32, 17, Math.PI, 0); c.lineTo(x + 17, g); c.fill(); c.stroke();
+  c.restore();
+}
+
+// ---- Portraits (for cards and slots) ----
+const portraitCache = {};
+function portrait(id) {
+  if (UNIT_LOOKS[id].kind === 'sprite') return UNIT_LOOKS[id].src;
+  if (!portraitCache[id]) {
+    const pc = document.createElement('canvas');
+    pc.width = pc.height = 96;
+    drawCritter(pc.getContext('2d'), 50, 88, 62, UNIT_LOOKS[id], 0, -1, false);
+    portraitCache[id] = pc.toDataURL();
+  }
+  return portraitCache[id];
+}
+
+// ---- Screens ----
+const SCREENS = ['lobby', 'stageSelect', 'gacha', 'collection', 'gameScreen'];
+let activeScreen = 'lobby';
+let stageIndex = -1;
+let stage = null;
+let paused = false;
+
+function showScreen(name) {
+  if (name !== 'gameScreen') {
+    stage = null;
+    gameOver = true;
+    bannerEl.style.display = 'none';
+  }
+  activeScreen = name;
+  document.body.classList.toggle('inBattle', name === 'gameScreen');
+  for (const s of SCREENS) $(s).classList.toggle('active', s === name);
+  ({ lobby: renderLobby, stageSelect: renderStageSelect, gacha: renderGacha, collection: renderCollection })[name]?.();
+  renderBones();
+}
+
+function renderBones() { $('bones').textContent = '🦴 ' + save.bones; }
+
+function nextStage() {
+  const ch = STORY.find(c => save.progress[c] < CHAPTER_LEN[c]);
+  return ch ? STAGES.find(s => s.chapter === ch && s.num === save.progress[ch] + 1) : null;
+}
+
+function renderLobby() {
+  const next = nextStage();
+  $('playSub').textContent = next ? `다음: ${next.flag} ${next.name}` : '모든 스테이지 클리어!';
+  $('dogsSub').textContent = `${Object.keys(save.owned).length}/${Object.keys(UNIT_TYPES).length} 캐릭터`;
+}
+
+let mapTab = 'eoc';
+function renderStageSelect() {
+  const tabs = $('chapterTabs');
+  tabs.innerHTML = '';
+  for (const ch of [...STORY, 'event']) {
+    const b = document.createElement('button');
+    const locked = chapterLocked(ch);
+    b.className = 'bcBtn small ' + (ch === mapTab ? '' : 'off');
+    b.textContent = CHAPTERS[ch].name + (locked ? ' 🔒' : '');
+    b.onclick = () => { mapTab = ch; renderStageSelect(); };
+    tabs.appendChild(b);
+  }
+
+  const list = STAGES.filter(s => s.chapter === mapTab);
+  const info = $('chapterInfo');
+  if (mapTab === 'event') info.textContent = '세계편을 진행하면 새 이벤트가 열려요. 몇 번이든 도전 가능!';
+  else if (mapTab === 'itf' && chapterLocked('itf')) info.textContent = '세계편 1장의 달을 클리어하면 열려요 (외계 냥코 등장!)';
+  else if (mapTab === 'itf2' && chapterLocked('itf2')) info.textContent = '미래편 1장의 달을 클리어하면 열려요 (메카냥코 군단 등장!)';
+  else info.textContent = `${CHAPTERS[mapTab].name} — ${save.progress[mapTab]}/${list.length} 클리어`;
+
+  const grid = $('stageGrid');
+  grid.className = mapTab === 'event' ? 'events' : '';
+  grid.innerHTML = '';
+  const next = nextStage();
+  let nextEl = null;
+  for (const s of list) {
+    const locked = !isUnlocked(s);
+    const cleared = isCleared(s);
+    const tile = document.createElement('button');
+    tile.className = 'stageTile panel' + (s === next ? ' next' : '');
+    tile.style.setProperty('--c', CHAPTERS[s.chapter].color);
+    tile.disabled = locked;
+    const label = s.chapter === 'event' ? (locked ? `세계편 ${s.unlockAt}스테이지 클리어 후 개방` : s.desc) : '';
+    tile.innerHTML = `
+      <span class="badge">${locked ? '🔒' : cleared ? '👑' : ''}</span>
+      ${s.num ? `<span class="num">${s.num}</span>` : ''}
+      <span class="flag">${s.flag}</span>
+      <span class="name">${s.name}</span>
+      ${label ? `<span class="desc">${label}</span>` : ''}
+      <span class="rw">🦴 ${cleared ? s.rewardReplay : s.rewardFirst}</span>`;
+    tile.onclick = () => startStage(STAGES.indexOf(s));
+    grid.appendChild(tile);
+    if (s === next) nextEl = tile;
+  }
+  if (nextEl && nextEl.scrollIntoView) nextEl.scrollIntoView({ block: 'center' });
+}
+
+function levelUpButtonHtml(id) {
+  const lv = save.owned[id];
+  if (lv >= MAX_LEVEL) return '<button class="lvBtn" disabled>MAX</button>';
+  return `<button class="lvBtn" data-lv="${id}" ${save.bones < levelCost(lv) ? 'disabled' : ''}>레벨업 🦴${levelCost(lv)}</button>`;
+}
+
+function levelUp(id) {
+  const lv = save.owned[id];
+  if (!lv || lv >= MAX_LEVEL || save.bones < levelCost(lv)) return;
+  save.bones -= levelCost(lv);
+  save.owned[id]++;
+  persist();
+  renderBones();
+  renderCollection();
+}
+
+function unitCardHtml(id, badge, extraClass, withLevelUp) {
+  const def = UNIT_TYPES[id];
+  const m = levelMult(id);
+  const locked = extraClass === 'locked';
+  return `
+    <div class="dogCard r${def.rarity} ${extraClass || ''}" data-id="${id}">
+      <div class="rar">${RARITY_NAMES[def.rarity]}</div>
+      ${badge || ''}
+      <img src="${portrait(id)}" alt="${locked ? '???' : def.name}">
+      <div class="nm">${locked ? '???' : def.name}</div>
+      <div class="st">${locked ? '뽑기에서 획득 가능' : `체력 ${Math.round(def.hp * m)} · 공격 ${Math.round(def.atk * m)}<br>${def.cost}${CURRENCY} · ${def.range > 50 ? '원거리' : '근거리'}${def.area ? '·범위' : ''} · 쿨 ${def.cd}초`}</div>
+      ${withLevelUp ? levelUpButtonHtml(id) : ''}
+    </div>`;
+}
+
+function renderCollection() {
+  $('squadLbl').textContent = `편성 ${save.squad.length}/${MAX_SQUAD} — 캐릭터를 눌러 추가/해제, 🦴로 레벨업`;
+  const slots = $('squadSlots');
+  slots.innerHTML = '';
+  for (let i = 0; i < MAX_SQUAD; i++) {
+    const id = save.squad[i];
+    const el = document.createElement('button');
+    el.className = 'slot' + (id ? '' : ' empty');
+    if (id) {
+      el.style.backgroundImage = `url(${portrait(id)})`;
+      el.innerHTML = `<span class="cost">${UNIT_TYPES[id].cost}${CURRENCY}</span>`;
+      el.onclick = () => toggleSquad(id);
+    }
+    slots.appendChild(el);
+  }
+
+  const grid = $('collectionGrid');
+  grid.innerHTML = Object.keys(UNIT_TYPES).map(id => {
+    if (!save.owned[id]) return unitCardHtml(id, '', 'locked');
+    return unitCardHtml(id, `<span class="badge">Lv ${save.owned[id]}</span>`, save.squad.includes(id) ? 'inSquad' : '', true);
+  }).join('');
+  for (const card of grid.querySelectorAll('.dogCard:not(.locked)')) card.onclick = () => toggleSquad(card.dataset.id);
+  for (const btn of grid.querySelectorAll('.lvBtn[data-lv]')) btn.onclick = e => { e.stopPropagation(); levelUp(btn.dataset.lv); };
+}
+
+function toggleSquad(id) {
+  const i = save.squad.indexOf(id);
+  if (i >= 0) {
+    if (save.squad.length === 1) return;
+    save.squad.splice(i, 1);
+  } else {
+    if (save.squad.length >= MAX_SQUAD) return;
+    save.squad.push(id);
+  }
+  persist();
+  renderCollection();
+}
+
+// ---- Gacha ----
+function renderGacha() {
+  $('gachaRates').innerHTML = RARITY_RATES.map(([r, pct]) => `<span class="r${r}">${RARITY_NAMES[r]} ${pct}%</span>`).join('');
+  $('pull1').disabled = save.bones < PULL_COST;
+  $('pull10').disabled = save.bones < PULL10_COST;
+}
+
+function rollRarity() {
+  let roll = Math.random() * 100;
+  for (const [r, pct] of RARITY_RATES) {
+    if (roll < pct) return r;
+    roll -= pct;
+  }
+  return 'C';
+}
+
+function rollUnit(rarity) {
+  const pool = Object.keys(UNIT_TYPES).filter(id => !UNIT_TYPES[id].starter && UNIT_TYPES[id].rarity === rarity);
+  return pool[Math.floor(Math.random() * pool.length)];
+}
+
+function pull(count, cost) {
+  if (save.bones < cost) return;
+  save.bones -= cost;
+  const rarities = Array.from({ length: count }, rollRarity);
+  if (count === 10 && rarities.every(r => r === 'C')) rarities[9] = 'R';
+
+  const results = rarities.map(r => {
+    const id = rollUnit(r);
+    let badge;
+    if (!save.owned[id]) {
+      save.owned[id] = 1;
+      if (save.squad.length < MAX_SQUAD) save.squad.push(id);
+      badge = '<span class="badge new">NEW!</span>';
+    } else if (save.owned[id] < MAX_LEVEL) {
+      save.owned[id]++;
+      badge = `<span class="badge">Lv ${save.owned[id]}</span>`;
+    } else {
+      save.bones += MAXED_DUPE_REFUND;
+      badge = `<span class="badge">MAX +🦴${MAXED_DUPE_REFUND}</span>`;
+    }
+    return { id, html: unitCardHtml(id, badge) };
+  });
+  persist();
+  renderGacha();
+  renderBones();
+  $('gachaResults').innerHTML = '';
+  startReveal(results);
+}
+$('pull1').onclick = () => pull(1, PULL_COST);
+$('pull10').onclick = () => pull(10, PULL10_COST);
+
+// Capsule reveal: drop → shake → open, tap to advance.
+const overlayEl = $('capsuleOverlay');
+const capStageEl = $('capStage');
+const capsuleEl = $('capsule');
+let reveal = null;
+
+function startReveal(results) {
+  reveal = { results, i: 0, ready: false, timer: null };
+  overlayEl.classList.add('show');
+  showCapsule();
+}
+
+function showCapsule() {
+  const { results, i } = reveal;
+  const r = results[i];
+  reveal.ready = false;
+  capStageEl.classList.remove('opened');
+  capsuleEl.classList.remove('drop');
+  void capsuleEl.offsetWidth;  // restart the CSS animation
+  capsuleEl.style.setProperty('--cap', CAPSULE_COLORS[UNIT_TYPES[r.id].rarity]);
+  capsuleEl.classList.add('drop');
+  $('revealCard').innerHTML = r.html;
+  $('capCount').textContent = results.length > 1 ? `${i + 1} / ${results.length}` : '';
+  $('capHint').textContent = '';
+  reveal.timer = setTimeout(openCapsule, 1100);
+}
+
+function openCapsule() {
+  capStageEl.classList.add('opened');
+  reveal.ready = true;
+  $('capHint').textContent = reveal.i < reveal.results.length - 1 ? '터치해서 계속' : '터치해서 완료';
+}
+
+function finishReveal() {
+  clearTimeout(reveal.timer);
+  $('gachaResults').innerHTML = reveal.results.map(r => r.html).join('');
+  reveal = null;
+  overlayEl.classList.remove('show');
+  capStageEl.classList.remove('opened');
+}
+
+overlayEl.onclick = () => {
+  if (!reveal) return;
+  if (!reveal.ready) { clearTimeout(reveal.timer); openCapsule(); return; }
+  reveal.i++;
+  if (reveal.i >= reveal.results.length) finishReveal();
+  else showCapsule();
+};
+$('skipBtn').onclick = e => { e.stopPropagation(); if (reveal) finishReveal(); };
+
+// ---- Navigation ----
+const bannerEl = $('banner');
+$('battleBig').onclick = () => showScreen('stageSelect');
+$('gachaBtn').onclick = () => { $('gachaResults').innerHTML = ''; showScreen('gacha'); };
+$('dogsBtn').onclick = () => showScreen('collection');
+for (const b of document.querySelectorAll('.toLobby')) b.onclick = () => showScreen('lobby');
+$('menuBtn').onclick = () => showScreen('stageSelect');
+$('retryBtn').onclick = () => startStage(stageIndex);
+function stageAfter(i) {
+  const s = STAGES[i];
+  if (s.chapter === 'event') return -1;
+  if (s.num === CHAPTER_LEN[s.chapter]) {
+    const nextCh = STORY[STORY.indexOf(s.chapter) + 1];
+    return nextCh ? STAGES.findIndex(t => t.chapter === nextCh) : -1;
+  }
+  return i + 1;
+}
+$('nextBtn').onclick = () => { const n = stageAfter(stageIndex); if (n >= 0) startStage(n); };
+$('resumeBtn').onclick = () => { paused = false; bannerEl.style.display = 'none'; };
+$('backBtn').onclick = () => {
+  if (gameOver) return;
+  paused = true;
+  showBanner('일시정지', '#fff', '', { resume: true, retry: true });
+};
+
+function showBanner(text, color, reward, buttons) {
+  bannerEl.style.display = 'flex';
+  $('bannerText').textContent = text;
+  $('bannerText').style.color = color;
+  $('bannerReward').textContent = reward;
+  $('resumeBtn').style.display = buttons.resume ? '' : 'none';
+  $('retryBtn').style.display = buttons.retry ? '' : 'none';
+  $('nextBtn').style.display = buttons.next ? '' : 'none';
+}
+
+// ---- Battle ----
+let money = 250;
+let workerLv = 1;
+
+const towers = {
+  player: { x: PLAYER_TOWER_X, hp: PLAYER_BASE_HP, maxHp: PLAYER_BASE_HP, side: 'player', shake: 0 },
+  enemy:  { x: ENEMY_TOWER_X, hp: 1000, maxHp: 1000, side: 'enemy', shake: 0 },
+};
+
+let units = [];
+let effects = [];
+let nextId = 1;
+let gameOver = true;
+let bossSpawned = false;
+let bossTimer = 0;
+
+let enemySpawnTimer = 3;
+let enemySpawnInterval = 4;
+let slotEls = [];
+let cooldowns = {};
+
+function buildSlots() {
+  const bar = $('slots');
+  bar.innerHTML = '';
+  slotEls = [];
+  for (let i = 0; i < MAX_SQUAD; i++) {
+    const id = save.squad[i];
+    const el = document.createElement('button');
+    el.className = 'slot' + (id ? '' : ' empty');
+    if (id) {
+      el.style.backgroundImage = `url(${portrait(id)})`;
+      el.innerHTML = `<span class="cdMask"></span><span class="cdNum"></span><span class="cost">${UNIT_TYPES[id].cost}${CURRENCY}</span>`;
+      el.onclick = () => trySpawnPlayerUnit(id);
+      slotEls.push({ el, id, mask: el.querySelector('.cdMask'), num: el.querySelector('.cdNum') });
+    }
+    bar.appendChild(el);
+  }
+}
+
+function startStage(i) {
+  stageIndex = i;
+  showScreen('gameScreen');
+  stage = STAGES[i];
+  money = stage.startMoney;
+  workerLv = 1;
+  towers.player.hp = towers.player.maxHp = PLAYER_BASE_HP;
+  towers.enemy.hp = towers.enemy.maxHp = stage.towerHp;
+  towers.player.shake = towers.enemy.shake = 0;
+  units = [];
+  effects = [];
+  cooldowns = {};
+  cannonCharge = 0;
+  enemySpawnTimer = 3;
+  enemySpawnInterval = stage.spawnStart;
+  bossSpawned = false;
+  bossTimer = 5;
+  gameOver = false;
+  paused = false;
+  mapTab = stage.chapter;
+  $('stageLabel').textContent = `${CHAPTERS[stage.chapter].name}${stage.num ? ' ' + stage.num : ''} · ${stage.flag} ${stage.name}`;
+  bossCount = 0;
+  if (stage.startBoss) { bossSpawned = true; spawnBoss(); }
+  bannerEl.style.display = 'none';
+  buildSlots();
+}
+
+let bossCount = 0;
+function spawnBoss() {
+  const type = stage.bossCycle ? stage.bossCycle[bossCount % stage.bossCycle.length] : stage.bossType || 'bigCat';
+  bossCount++;
+  spawnUnit('enemy', type, stage.bossMult || 2.5);
+  effects.push({ type: 'text', text: '보스 출현!', x: W / 2, y: 120, t: 2, max: 2, px: 44, color: '#ff5a3c' });
+}
+
+// bossMult: >0 makes this enemy a boss with that much extra strength.
+function pickEnemy(pool) {
+  let r = Math.random() * pool.reduce((sum, [, w]) => sum + w, 0);
+  for (const [type, w] of pool) { if ((r -= w) < 0) return type; }
+  return pool[0][0];
+}
+
+function spawnUnit(side, typeName, bossMult) {
+  const def = side === 'player' ? UNIT_TYPES[typeName] : ENEMY_TYPES[typeName];
+  if (side === 'enemy' && !save.seen[typeName]) {
+    save.seen[typeName] = true;
+    persist();
+    effects.push({ type: 'text', text: `새로운 적! ${def.name}`, x: W / 2, y: 80, t: 2.5, max: 2.5, px: 30, color: RARITY_COLORS[def.rarity] });
+  }
+  const boss = !!bossMult;
+  let mult = side === 'enemy' ? stage.enemyMult : levelMult(typeName);
+  if (boss) mult *= bossMult;
+  units.push({
+    id: nextId++,
+    side,
+    type: typeName,
+    look: side === 'player' ? UNIT_LOOKS[typeName] : CAT_LOOKS[boss && typeName === 'bigCat' ? 'boss' : typeName],
+    rarity: side === 'enemy' ? def.rarity : null,
+    area: !!def.area,
+    fly: def.fly || 0,
+    alien: side === 'enemy' && !!stage.alien,
+    x: side === 'player' ? PLAYER_TOWER_X - 30 : ENEMY_TOWER_X + 30,
+    yOff: Math.random() * 8,
+    hp: def.hp * mult,
+    maxHp: def.hp * mult,
+    atk: def.atk * (boss ? mult / 2 : mult),
+    range: def.range,
+    speed: def.speed,
+    atkCooldown: def.atkCooldown,
+    atkTimer: 0,
+    atkAnim: 0,
+    kb: boss ? 4 : def.kb,
+    kbT: 0,
+    anim: Math.random() * 6,
+    size: def.size * (boss ? (typeName === 'bigCat' || typeName === 'cat' ? 1.8 : 1.25) : 1),
+    reward: Math.round((def.reward || 0) * (boss ? 5 : 1) * (stage.enemyReward || 1)),
+    state: 'walk',
+  });
+}
+
+function trySpawnPlayerUnit(id) {
+  const def = UNIT_TYPES[id];
+  if (gameOver || paused || money < def.cost || cooldowns[id] > 0) return;
+  money -= def.cost;
+  cooldowns[id] = def.cd;
+  spawnUnit('player', id);
+}
+
+$('workerBtn').onclick = () => {
+  if (gameOver || paused || workerLv >= WORKER_MAX || money < workerCost()) return;
+  money -= workerCost();
+  workerLv++;
+};
+
+function fireCannon() {
+  if (gameOver || paused || cannonCharge < CANNON_MAX) return;
+  cannonCharge = 0;
+  effects.push({ type: 'beam', t: 0.6, max: 0.6 });
+  for (const unit of units) if (unit.side === 'enemy') damage(unit, CANNON_DAMAGE, true);
+}
+$('cannonBtn').onclick = fireCannon;
+
+// Knock a unit back each time its HP crosses a threshold (or always, when forced).
+function damage(u, amount, forceKb) {
+  const step = u.maxHp / (u.kb + 1);
+  const before = Math.ceil(u.hp / step);
+  u.hp -= amount;
+  if (u.hp > 0 && (forceKb || Math.ceil(u.hp / step) < before)) {
+    u.kbT = KB_TIME;
+    u.atkAnim = 0;
+    u.atkTimer = 0.3;
+  }
+}
+
+function findTarget(unit) {
+  const dir = DIR[unit.side];
+  let closest = null;
+  let closestDist = Infinity;
+  for (const other of units) {
+    if (other.side === unit.side || other.state === 'dead') continue;
+    const dist = Math.abs(other.x - unit.x) - other.size * 0.4;
+    const inFront = (other.x - unit.x) * dir >= -5;
+    if (inFront && dist < closestDist) {
+      closest = other;
+      closestDist = dist;
+    }
+  }
+  const enemyTower = unit.side === 'player' ? towers.enemy : towers.player;
+  const towerDist = Math.abs(enemyTower.x - unit.x) - TOWER_HALF;
+  if (!closest || towerDist < closestDist) {
+    return { entity: enemyTower, dist: towerDist, isTower: true };
+  }
+  return { entity: closest, dist: closestDist, isTower: false };
+}
+
+function hit(attacker, found) {
+  const tx = found.isTower ? found.entity.x - DIR[attacker.side] * TOWER_HALF : found.entity.x;
+  const ty = LANE_Y - (found.isTower ? 50 : found.entity.size * 0.6);
+  if (found.isTower) {
+    found.entity.hp -= attacker.atk;
+    found.entity.shake = 0.15;
+  } else if (attacker.area) {
+    const dir = DIR[attacker.side];
+    for (const u of units) {
+      if (u.side === attacker.side || u.hp <= 0) continue;
+      const ahead = (u.x - attacker.x) * dir;
+      if (ahead >= -5 && ahead - u.size * 0.4 <= attacker.range) damage(u, attacker.atk);
+    }
+    effects.push({ type: 'spark', x: tx, y: ty, t: 0.3, max: 0.3 });
+  } else {
+    damage(found.entity, attacker.atk);
+  }
+  if (attacker.range > 50) effects.push({ type: 'shot', x1: attacker.x, y1: LANE_Y - attacker.size * 0.7, x2: tx, y2: ty, t: 0.12, max: 0.12 });
+  effects.push({ type: 'spark', x: tx, y: ty, t: 0.2, max: 0.2 });
+}
+
+function update(dt) {
+  if (gameOver || paused) return;
+
+  money = Math.min(walletMax(), money + incomePerSec() * dt);
+  cannonCharge = Math.min(CANNON_MAX, cannonCharge + (CANNON_MAX / CANNON_CHARGE_TIME) * dt);
+  for (const id in cooldowns) cooldowns[id] = Math.max(0, cooldowns[id] - dt);
+  for (const t of Object.values(towers)) t.shake = Math.max(0, t.shake - dt);
+
+  enemySpawnTimer -= dt;
+  if (enemySpawnTimer <= 0) {
+    spawnUnit('enemy', pickEnemy(stage.pool));
+    enemySpawnTimer = enemySpawnInterval;
+    enemySpawnInterval = Math.max(stage.spawnMin, enemySpawnInterval - 0.05);
+  }
+  if (stage.bossEvery) {
+    bossTimer -= dt;
+    if (bossTimer <= 0) { bossTimer = stage.bossEvery; spawnBoss(); }
+  } else if (!bossSpawned && towers.enemy.hp < towers.enemy.maxHp * stage.bossAt) {
+    bossSpawned = true;
+    spawnBoss();
+  }
+
+  for (const unit of units) {
+    if (unit.state === 'dead') continue;
+
+    if (unit.kbT > 0) {
+      unit.kbT -= dt;
+      unit.x -= DIR[unit.side] * 110 * dt;
+      unit.x = Math.max(ENEMY_TOWER_X + 20, Math.min(PLAYER_TOWER_X - 20, unit.x));
+      continue;
+    }
+    if (unit.atkAnim > 0) unit.atkAnim -= dt;
+
+    const found = findTarget(unit);
+    if (found.dist <= unit.range) {
+      unit.state = 'attack';
+      unit.atkTimer -= dt;
+      if (unit.atkTimer <= 0) {
+        unit.atkTimer = unit.atkCooldown;
+        unit.atkAnim = 0.25;
+        hit(unit, found);
+      }
+    } else {
+      unit.state = 'walk';
+      unit.anim += dt * (4 + unit.speed / 8);
+      unit.x += DIR[unit.side] * unit.speed * dt;
+    }
+  }
+
+  for (const unit of units) {
+    if (unit.state !== 'dead' && unit.hp <= 0) {
+      unit.state = 'dead';
+      effects.push({ type: 'soul', x: unit.x, y: LANE_Y - unit.size * 0.6, t: 1, max: 1 });
+      if (unit.side === 'enemy') {
+        money = Math.min(walletMax(), money + unit.reward);
+        effects.push({ type: 'text', text: `+${unit.reward}${CURRENCY}`, x: unit.x, y: LANE_Y - unit.size - 10, t: 0.8, max: 0.8, px: 20, color: '#ffe25a', rise: 30 });
+      }
+    }
+  }
+  units = units.filter(u => u.state !== 'dead');
+  for (const e of effects) e.t -= dt;
+  effects = effects.filter(e => e.t > 0);
+
+  if (towers.player.hp <= 0) endGame(false);
+  else if (towers.enemy.hp <= 0) endGame(true);
+}
+
+function endGame(playerWon) {
+  gameOver = true;
+  const firstClear = playerWon && !isCleared(stage);
+  if (firstClear) {
+    if (stage.chapter === 'event') save.events[stage.evId] = true;
+    else save.progress[stage.chapter] = stage.num;
+  }
+  const reward = battleReward(stage, playerWon, firstClear);
+  save.bones += reward;
+  persist();
+  renderBones();
+
+  const chapterDone = stage.chapter !== 'event' && stage.num === CHAPTER_LEN[stage.chapter];
+  let title = playerWon ? '승리!' : '패배...';
+  if (playerWon && chapterDone) title = CHAPTERS[stage.chapter].name + ' 클리어!';
+  const opened = firstClear && chapterDone && STORY[STORY.indexOf(stage.chapter) + 1];
+  showBanner(
+    title,
+    playerWon ? '#ffe25a' : '#ff5a3c',
+    `+${reward} 🦴${firstClear ? '  첫 클리어 보너스!' : ''}${opened ? `\n${CHAPTERS[opened].name} 개방!` : ''}`,
+    { retry: true, next: playerWon && stageAfter(stageIndex) >= 0 },
+  );
+}
+
+// ---- Stage scenery: drawn over the background, behind bases and units ----
+// Authored with the horizon at y=190; draw() shifts it down by SCENERY_SHIFT.
+const HORIZON_Y = 190;
+
+function drawHills(color, peaks) {
+  ctx.fillStyle = color;
+  ctx.beginPath();
+  ctx.moveTo(0, HORIZON_Y);
+  for (const [x, y] of peaks) ctx.lineTo(x, y);
+  ctx.lineTo(canvas.width, HORIZON_Y);
+  ctx.closePath();
+  ctx.fill();
+}
+
+function drawKorea() {
+  // Bukhansan-style ridges
+  drawHills('rgba(90,120,140,0.45)', [[0,120],[90,95],[170,125],[260,85],[340,120],[430,100],[520,130],[610,80],[700,115],[790,90],[900,125]]);
+  drawHills('rgba(70,110,80,0.6)', [[0,150],[120,130],[230,150],[330,135],[450,155],[560,128],[680,150],[800,132],[900,150]]);
+
+  // N Seoul Tower on Namsan
+  const tx = 640;
+  ctx.fillStyle = 'rgba(60,90,70,0.8)';
+  ctx.beginPath(); ctx.ellipse(tx, HORIZON_Y - 25, 80, 30, 0, Math.PI, 0); ctx.fill();
+  ctx.fillStyle = '#eee';
+  ctx.fillRect(tx - 4, 70, 8, 95);
+  ctx.fillStyle = '#ddd';
+  ctx.fillRect(tx - 12, 82, 24, 12);
+  ctx.fillStyle = '#cd2e3a';
+  ctx.fillRect(tx - 1, 46, 2, 24);
+
+  // Gwanghwamun-style palace gate
+  const gx = 400, baseW = 170, baseTop = HORIZON_Y - 40;
+  ctx.fillStyle = '#b8ad96';
+  ctx.fillRect(gx - baseW / 2, baseTop, baseW, 40);
+  ctx.fillStyle = '#3a2c1c';
+  for (const off of [-45, 0, 45]) {
+    ctx.beginPath();
+    ctx.moveTo(gx + off - 13, HORIZON_Y);
+    ctx.lineTo(gx + off - 13, baseTop + 16);
+    ctx.arc(gx + off, baseTop + 16, 13, Math.PI, 0);
+    ctx.lineTo(gx + off + 13, HORIZON_Y);
+    ctx.fill();
+  }
+  // pavilion columns
+  ctx.fillStyle = '#a3322a';
+  for (let x = gx - 60; x <= gx + 60; x += 30) ctx.fillRect(x - 3, baseTop - 22, 6, 22);
+  ctx.fillStyle = '#2f6b5e';
+  ctx.fillRect(gx - 66, baseTop - 26, 132, 5);
+  // curved giwa roof with upturned eaves
+  ctx.fillStyle = '#3b3b40';
+  ctx.beginPath();
+  ctx.moveTo(gx - 100, baseTop - 36);
+  ctx.quadraticCurveTo(gx - 80, baseTop - 22, gx - 50, baseTop - 26);
+  ctx.lineTo(gx + 50, baseTop - 26);
+  ctx.quadraticCurveTo(gx + 80, baseTop - 22, gx + 100, baseTop - 36);
+  ctx.quadraticCurveTo(gx + 60, baseTop - 44, gx + 40, baseTop - 58);
+  ctx.lineTo(gx - 40, baseTop - 58);
+  ctx.quadraticCurveTo(gx - 60, baseTop - 44, gx - 100, baseTop - 36);
+  ctx.fill();
+
+  // Taegukgi flags beside the gate
+  for (const fx of [gx - 130, gx + 130]) drawTaegukgi(fx, baseTop - 30);
+}
+
+function drawTaegukgi(poleX, topY) {
+  ctx.fillStyle = '#777';
+  ctx.fillRect(poleX - 1, topY, 2, HORIZON_Y - topY);
+  const w = 30, h = 20, x = poleX + 1, y = topY + 2, cx = x + w / 2, cy = y + h / 2, r = 5;
+  ctx.fillStyle = '#fff';
+  ctx.fillRect(x, y, w, h);
+  ctx.fillStyle = '#cd2e3a';
+  ctx.beginPath(); ctx.arc(cx, cy, r, Math.PI, 0); ctx.fill();
+  ctx.fillStyle = '#0047a0';
+  ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI); ctx.fill();
+  ctx.fillStyle = '#000';
+  for (const [dx, dy] of [[-10,-6],[10,-6],[-10,6],[10,6]]) ctx.fillRect(cx + dx - 2, cy + dy - 2, 4, 4);
+}
+
+function drawJapan() {
+  // Mt. Fuji
+  ctx.fillStyle = 'rgba(90,110,150,0.6)';
+  ctx.beginPath(); ctx.moveTo(420, HORIZON_Y); ctx.lineTo(560, 70); ctx.lineTo(600, 70); ctx.lineTo(760, HORIZON_Y); ctx.fill();
+  ctx.fillStyle = '#fff';
+  ctx.beginPath(); ctx.moveTo(530, 100); ctx.lineTo(560, 70); ctx.lineTo(600, 70); ctx.lineTo(632, 100);
+  ctx.lineTo(610, 92); ctx.lineTo(590, 104); ctx.lineTo(570, 92); ctx.lineTo(550, 104); ctx.fill();
+  drawHills('rgba(70,110,80,0.55)', [[0,155],[150,140],[300,158],[450,145],[600,160],[750,140],[900,155]]);
+  // Torii gate
+  const x = 300, top = 105;
+  ctx.fillStyle = '#d0392b';
+  ctx.fillRect(x - 40, top + 10, 8, HORIZON_Y - top - 10);
+  ctx.fillRect(x + 32, top + 10, 8, HORIZON_Y - top - 10);
+  ctx.fillRect(x - 50, top + 22, 100, 6);
+  ctx.fillStyle = '#222';
+  ctx.fillRect(x - 58, top, 116, 8);
+}
+
+function drawChina() {
+  drawHills('rgba(90,120,110,0.5)', [[0,110],[120,80],[240,120],[360,90],[480,125],[600,85],[740,120],[900,95]]);
+  // Great Wall winding across the ridge
+  const pts = [[0,160],[120,138],[220,155],[330,130],[450,150],[560,128],[680,148],[790,132],[900,150]];
+  ctx.strokeStyle = '#a89a7a';
+  ctx.lineWidth = 8;
+  ctx.beginPath(); pts.forEach(([x, y], i) => i ? ctx.lineTo(x, y) : ctx.moveTo(x, y)); ctx.stroke();
+  ctx.lineWidth = 1;
+  ctx.fillStyle = '#8a7c5e';
+  for (const [x, y] of pts.slice(1, -1)) ctx.fillRect(x - 9, y - 22, 18, 22);
+  drawHills('rgba(70,110,80,0.55)', [[0,170],[200,160],[400,172],[600,158],[900,170]]);
+}
+
+function drawUSA() {
+  // Manhattan skyline
+  ctx.fillStyle = 'rgba(80,90,110,0.65)';
+  const blds = [[250,60,70],[315,40,95],[360,55,60],[420,35,120],[460,50,80],[515,45,105],[565,60,65],[630,40,90],[675,55,70]];
+  for (const [x, w, h] of blds) ctx.fillRect(x, HORIZON_Y - h, w, h);
+  ctx.fillRect(438, HORIZON_Y - 150, 4, 30); // spire
+  // Statue of Liberty
+  const sx = 170;
+  ctx.fillStyle = 'rgba(80,140,120,0.9)';
+  ctx.fillRect(sx - 14, HORIZON_Y - 30, 28, 30);
+  ctx.beginPath(); ctx.moveTo(sx - 9, HORIZON_Y - 30); ctx.lineTo(sx - 5, HORIZON_Y - 90); ctx.lineTo(sx + 5, HORIZON_Y - 90); ctx.lineTo(sx + 9, HORIZON_Y - 30); ctx.fill();
+  ctx.beginPath(); ctx.arc(sx, HORIZON_Y - 96, 7, 0, Math.PI * 2); ctx.fill();
+  ctx.fillRect(sx + 4, HORIZON_Y - 125, 4, 32);
+  ctx.fillStyle = '#ffd54a';
+  ctx.beginPath(); ctx.arc(sx + 6, HORIZON_Y - 128, 4, 0, Math.PI * 2); ctx.fill();
+}
+
+// ---- More scenery: one landmark scene per place (same horizon convention as above) ----
+const G = HORIZON_Y;
+function P(color, pts) {
+  ctx.fillStyle = color;
+  ctx.beginPath();
+  pts.forEach(([x, y], i) => i ? ctx.lineTo(x, y) : ctx.moveTo(x, y));
+  ctx.closePath();
+  ctx.fill();
+}
+function R(color, x, y, w, h) { ctx.fillStyle = color; ctx.fillRect(x, y, w, h); }
+function C(color, x, y, r) { ctx.fillStyle = color; ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill(); }
+function E(color, x, y, rx, ry, a0 = 0, a1 = Math.PI * 2) { ctx.fillStyle = color; ctx.beginPath(); ctx.ellipse(x, y, rx, ry, 0, a0, a1); ctx.fill(); }
+function skyTint(color) { R(color, 0, -SCENERY_SHIFT, W, G + SCENERY_SHIFT); }
+function groundTint(color) { R(color, 0, G, W, H); }
+function sea(color = 'rgba(60,140,210,0.8)', depth = 14) { R(color, 0, G - depth, W, depth); }
+function hills(color, base, amp, seed) {
+  const pts = [];
+  for (let x = 0; x <= W; x += 60) pts.push([x, base - amp * (0.5 + 0.5 * Math.sin(x * 0.011 + seed) * Math.cos(x * 0.004 + seed * 2))]);
+  drawHills(color, pts);
+}
+function backdrop(seed, back = 'rgba(90,120,140,0.45)', front = 'rgba(70,110,80,0.55)') {
+  hills(back, 125, 60, seed);
+  hills(front, 165, 30, seed + 1.7);
+}
+function peak(x, w, h, color, snow) {
+  P(color, [[x - w, G], [x, G - h], [x + w, G]]);
+  if (snow) P(snow, [[x - w * 0.28, G - h * 0.72], [x, G - h], [x + w * 0.28, G - h * 0.72], [x + w * 0.1, G - h * 0.64], [x - w * 0.1, G - h * 0.68]]);
+}
+function palm(x, h = 70) {
+  ctx.strokeStyle = '#8a6a3a'; ctx.lineWidth = 6; ctx.lineCap = 'round';
+  ctx.beginPath(); ctx.moveTo(x, G); ctx.quadraticCurveTo(x + 12, G - h / 2, x + 4, G - h); ctx.stroke();
+  ctx.lineWidth = 1;
+  ctx.fillStyle = '#3f9a3a';
+  for (let a = 0; a < 6; a++) {
+    ctx.save(); ctx.translate(x + 4, G - h); ctx.rotate(-Math.PI + a * Math.PI / 5);
+    ctx.beginPath(); ctx.ellipse(18, 0, 20, 5, 0.25, 0, Math.PI * 2); ctx.fill(); ctx.restore();
+  }
+}
+function pine(x, h = 50, snow) {
+  R('#6a4a2a', x - 3, G - 10, 6, 10);
+  for (let i = 0; i < 3; i++) {
+    const y = G - 8 - i * h / 4, w = (3 - i) * h / 6, top = y - h / 2.5;
+    P('#2f6a3a', [[x - w, y], [x, top], [x + w, y]]);
+    if (snow) P('#fff', [[x - w * 0.35, top + h / 2.5 * 0.35], [x, top], [x + w * 0.35, top + h / 2.5 * 0.35]]);
+  }
+}
+function acacia(x, s = 1) {
+  ctx.strokeStyle = '#6a4a2a'; ctx.lineWidth = 4 * s;
+  ctx.beginPath(); ctx.moveTo(x, G); ctx.lineTo(x, G - 30 * s); ctx.lineTo(x - 14 * s, G - 44 * s);
+  ctx.moveTo(x, G - 30 * s); ctx.lineTo(x + 16 * s, G - 44 * s); ctx.stroke(); ctx.lineWidth = 1;
+  E('#4a7a2a', x, G - 48 * s, 42 * s, 9 * s);
+}
+function sunDisk(x, y, r, color = 'rgba(255,220,90,0.9)') { C(color, x, y, r); }
+function stars(n, seed = 1) {
+  for (let i = 0; i < n; i++) C('rgba(255,255,255,0.9)', (i * 197 + seed * 53) % W, ((i * 89 + seed * 31) % 200) - 30, (i % 3) * 0.6 + 0.8);
+}
+
+function sceneMongolia() {
+  hills('rgba(150,160,90,0.5)', 130, 50, 2);
+  hills('rgba(120,150,70,0.55)', 170, 20, 4);
+  for (const x of [360, 470, 560]) {
+    R('#f4f0e6', x - 28, G - 22, 56, 22);
+    E('#f4f0e6', x, G - 22, 30, 14, Math.PI, 0);
+    R('#c0392b', x - 7, G - 16, 14, 16);
+    R('#3a6ab0', x - 28, G - 22, 56, 4);
+  }
+}
+function sceneThailand() {
+  backdrop(3);
+  const x = 450;
+  for (let i = 0; i < 5; i++) R('#d9a520', x - 40 + i * 7, G - 20 - i * 14, 80 - i * 14, 16);
+  P('#d9a520', [[x - 6, G - 88], [x, G - 140], [x + 6, G - 88]]);
+  palm(270); palm(640, 60);
+}
+function sceneCambodia() {
+  backdrop(5);
+  R('#9a8a6a', 330, G - 30, 240, 30);
+  for (const [x, h] of [[360, 70], [405, 85], [450, 110], [495, 85], [540, 70]]) {
+    E('#8a7a5a', x, G - 30 - h / 2, 14, h / 2);
+    P('#8a7a5a', [[x - 5, G - 30 - h + 4], [x, G - 30 - h - 12], [x + 5, G - 30 - h + 4]]);
+  }
+}
+function scenePhilippines() {
+  backdrop(1);
+  peak(520, 110, 120, 'rgba(110,120,110,0.8)');
+  sea();
+  palm(260); palm(330, 55); palm(700, 65);
+}
+function sceneAustralia() {
+  sea('rgba(60,140,210,0.8)', 20);
+  const x = 420;
+  R('#e8dcc0', x - 90, G - 24, 180, 10);
+  for (const [dx, h] of [[-60, 50], [-25, 64], [15, 56], [50, 42]]) P('#fbfbf6', [[x + dx - 20, G - 24], [x + dx + 10, G - 24 - h], [x + dx + 22, G - 24]]);
+  ctx.strokeStyle = '#6a6a7a'; ctx.lineWidth = 6;
+  ctx.beginPath(); ctx.arc(680, G + 30, 110, Math.PI * 1.15, Math.PI * 1.85); ctx.stroke(); ctx.lineWidth = 1;
+}
+function sceneSingapore() {
+  backdrop(6, 'rgba(90,120,140,0.35)');
+  sea();
+  const x = 470;
+  for (const dx of [-50, 0, 50]) P('#c9ced6', [[x + dx - 14, G - 14], [x + dx - 8, G - 120], [x + dx + 8, G - 120], [x + dx + 14, G - 14]]);
+  R('#8a93a0', x - 80, G - 132, 160, 10);
+  for (const [bx, w, h] of [[250, 30, 70], [285, 24, 95], [640, 34, 80], [680, 26, 60]]) R('rgba(80,90,110,0.6)', bx, G - h, w, h);
+}
+function sceneMaldives() {
+  sea('rgba(60,190,210,0.8)', 40);
+  for (const x of [330, 420, 510]) {
+    for (const dx of [-14, 14]) R('#6a4a2a', x + dx - 2, G - 40, 4, 40);
+    R('#d8b070', x - 22, G - 60, 44, 20);
+    P('#b07a3a', [[x - 28, G - 58], [x, G - 80], [x + 28, G - 58]]);
+  }
+  palm(650, 60); palm(700, 72);
+}
+function sceneIndia() {
+  backdrop(2, 'rgba(90,120,140,0.3)');
+  const x = 450;
+  R('#f4f0ea', x - 80, G - 20, 160, 20);
+  R('#f4f0ea', x - 55, G - 70, 110, 50);
+  E('#f4f0ea', x, G - 78, 38, 42, Math.PI, 0);
+  P('#f4f0ea', [[x - 4, G - 118], [x, G - 136], [x + 4, G - 118]]);
+  for (const dx of [-100, 100]) { R('#f4f0ea', x + dx - 5, G - 110, 10, 110); C('#f4f0ea', x + dx, G - 112, 7); }
+  R('rgba(60,90,120,0.4)', x - 20, G - 60, 40, 40);
+}
+function sceneNepal() {
+  peak(300, 170, 170, 'rgba(110,130,160,0.8)', '#fff');
+  peak(560, 200, 200, 'rgba(100,120,150,0.85)', '#fff');
+  hills('rgba(70,110,80,0.55)', 170, 20, 3);
+  const x = 450;
+  E('#f7f3ea', x, G - 12, 44, 30, Math.PI, 0);
+  R('#d9a520', x - 12, G - 60, 24, 20);
+  C('#1a1a1a', x - 5, G - 50, 2); C('#1a1a1a', x + 5, G - 50, 2);
+  P('#d9a520', [[x - 10, G - 60], [x, G - 100], [x + 10, G - 60]]);
+}
+function sceneDubai() {
+  groundTint('rgba(235,205,140,0.35)');
+  hills('rgba(225,195,130,0.6)', 170, 20, 1);
+  const x = 460;
+  P('#c9d2dc', [[x - 22, G], [x - 6, G - 190], [x, G - 215], [x + 6, G - 190], [x + 22, G]]);
+  for (const [bx, w, h] of [[300, 30, 80], [340, 26, 110], [540, 36, 95], [590, 26, 70], [630, 32, 120]]) R('rgba(90,110,130,0.6)', bx, G - h, w, h);
+}
+function sceneSaudi() {
+  groundTint('rgba(235,205,140,0.45)');
+  hills('rgba(225,190,120,0.7)', 150, 40, 3);
+  const x = 450;
+  R('#f4efe4', x - 60, G - 40, 120, 40);
+  E('#2f8a5a', x, G - 40, 34, 34, Math.PI, 0);
+  for (const dx of [-80, 80]) { R('#f4efe4', x + dx - 5, G - 100, 10, 100); P('#2f8a5a', [[x + dx - 7, G - 100], [x + dx, G - 118], [x + dx + 7, G - 100]]); }
+}
+function sceneKenya() {
+  groundTint('rgba(220,190,90,0.35)');
+  peak(620, 180, 110, 'rgba(110,120,140,0.7)', '#fff');
+  hills('rgba(170,160,80,0.5)', 172, 16, 2);
+  acacia(300); acacia(450, 0.8); acacia(760, 1.1);
+}
+function sceneMadagascar() {
+  backdrop(4);
+  for (const [x, s] of [[320, 1], [450, 1.2], [580, 0.9]]) {
+    P('#8a6a4a', [[x - 12 * s, G], [x - 8 * s, G - 70 * s], [x + 8 * s, G - 70 * s], [x + 12 * s, G]]);
+    E('#4a7a3a', x, G - 76 * s, 22 * s, 8 * s);
+  }
+}
+function sceneSouthAfrica() {
+  P('rgba(110,120,110,0.8)', [[250, G], [330, G - 110], [620, G - 110], [700, G]]);
+  hills('rgba(70,110,80,0.55)', 172, 16, 5);
+  acacia(200, 0.8); acacia(760, 0.9);
+}
+function sceneGhana() {
+  backdrop(7);
+  for (const x of [380, 470]) {
+    R('#b8885a', x - 22, G - 26, 44, 26);
+    P('#c9a55a', [[x - 30, G - 24], [x, G - 56], [x + 30, G - 24]]);
+    R('#3a2616', x - 6, G - 16, 12, 16);
+  }
+  palm(280); palm(600, 64); palm(660, 76);
+}
+function sceneSahara() {
+  skyTint('rgba(255,210,140,0.25)');
+  groundTint('rgba(235,200,130,0.6)');
+  sunDisk(700, 40, 30);
+  hills('rgba(230,190,110,0.8)', 150, 45, 1);
+  hills('rgba(220,175,95,0.85)', 175, 20, 3);
+}
+function sceneEgypt() {
+  groundTint('rgba(235,200,130,0.5)');
+  hills('rgba(230,195,120,0.6)', 172, 14, 2);
+  for (const [x, w, h] of [[360, 90, 100], [500, 110, 125], [630, 60, 65]]) {
+    P('#d8b068', [[x - w, G], [x, G - h], [x + w, G]]);
+    P('rgba(0,0,0,0.12)', [[x, G - h], [x + w, G], [x + w * 0.2, G]]);
+  }
+}
+function sceneTurkey() {
+  backdrop(3, 'rgba(90,120,140,0.35)');
+  const x = 450;
+  R('#d8d2c6', x - 70, G - 40, 140, 40);
+  E('#b8b2a6', x, G - 40, 40, 36, Math.PI, 0);
+  for (const dx of [-45, 45]) E('#b8b2a6', x + dx, G - 40, 18, 16, Math.PI, 0);
+  for (const dx of [-100, -85, 85, 100]) { R('#d8d2c6', x + dx - 3, G - 120, 6, 120); P('#8a8a9a', [[x + dx - 4, G - 120], [x + dx, G - 136], [x + dx + 4, G - 120]]); }
+  for (const [bx, by, col] of [[250, 40, '#e0452b'], [640, 20, '#ffae00'], [720, 60, '#3aa0ff']]) { E(col, bx, by, 14, 17); R('#6a4a2a', bx - 4, by + 18, 8, 6); }
+}
+function sceneRussia() {
+  backdrop(4, 'rgba(90,120,140,0.3)');
+  const x = 450;
+  R('#c0392b', x - 70, G - 50, 140, 50);
+  for (const [dx, h, col] of [[-55, 70, '#2f8a5a'], [-25, 90, '#ffae00'], [0, 115, '#3a6ab0'], [25, 90, '#e0452b'], [55, 70, '#2f8a5a']]) {
+    R('#e8d8b8', x + dx - 8, G - h, 16, h - 50);
+    ctx.fillStyle = col; ctx.beginPath();
+    ctx.moveTo(x + dx - 13, G - h); ctx.quadraticCurveTo(x + dx - 16, G - h - 20, x + dx, G - h - 32);
+    ctx.quadraticCurveTo(x + dx + 16, G - h - 20, x + dx + 13, G - h); ctx.fill();
+  }
+}
+function sceneGreece() {
+  sea('rgba(60,140,210,0.8)', 16);
+  hills('rgba(180,170,140,0.7)', 150, 20, 2);
+  const x = 450;
+  R('#efe8da', x - 100, G - 60, 200, 10);
+  P('#efe8da', [[x - 106, G - 60], [x, G - 90], [x + 106, G - 60]]);
+  for (let i = 0; i < 8; i++) R('#efe8da', x - 92 + i * 26, G - 50, 10, 34);
+  R('#efe8da', x - 104, G - 18, 208, 8);
+}
+function sceneItaly() {
+  backdrop(2);
+  const x = 380;
+  ctx.save(); ctx.translate(x, G); ctx.rotate(0.08);
+  for (let i = 0; i < 7; i++) R(i % 2 ? '#f2ede2' : '#e6dfd0', -18, -18 - i * 18, 36, 18);
+  ctx.restore();
+  E('#c9b89a', 600, G, 90, 60, Math.PI, 0);
+  for (let i = 0; i < 6; i++) E('rgba(80,60,40,0.5)', 530 + i * 28, G - 22, 8, 12);
+}
+function sceneMonaco() {
+  sea('rgba(60,140,210,0.8)', 26);
+  hills('rgba(120,130,110,0.7)', 110, 30, 3);
+  for (let i = 0; i < 10; i++) R(['#f4d9b0', '#f0c8a0', '#fff4e0'][i % 3], 260 + i * 34, G - 40 - (i % 3) * 12, 28, 30 + (i % 3) * 12);
+  for (const x of [300, 420, 560]) { P('#fff', [[x - 26, G - 26], [x + 26, G - 26], [x + 18, G - 16], [x - 18, G - 16]]); R('#fff', x - 8, G - 36, 16, 10); }
+}
+function sceneSpain() {
+  backdrop(6, 'rgba(160,130,110,0.4)');
+  const x = 450;
+  R('#c9a878', x - 60, G - 50, 120, 50);
+  for (const [dx, h] of [[-45, 120], [-15, 150], [15, 150], [45, 120]]) {
+    P('#c9a878', [[x + dx - 10, G - 50], [x + dx - 5, G - h], [x + dx, G - h - 16], [x + dx + 5, G - h], [x + dx + 10, G - 50]]);
+  }
+}
+function sceneFrance() {
+  backdrop(1, 'rgba(90,120,140,0.3)');
+  const x = 450;
+  ctx.fillStyle = '#6a5a4a';
+  ctx.beginPath();
+  ctx.moveTo(x - 60, G); ctx.quadraticCurveTo(x - 20, G - 70, x - 6, G - 190);
+  ctx.lineTo(x + 6, G - 190); ctx.quadraticCurveTo(x + 20, G - 70, x + 60, G); ctx.lineTo(x + 34, G);
+  ctx.quadraticCurveTo(x, G - 40, x - 34, G); ctx.closePath(); ctx.fill();
+  R('#6a5a4a', x - 34, G - 66, 68, 6); R('#6a5a4a', x - 20, G - 126, 40, 5);
+  P('#6a5a4a', [[x - 3, G - 190], [x, G - 212], [x + 3, G - 190]]);
+}
+function sceneGermany() {
+  backdrop(5);
+  P('rgba(90,110,90,0.8)', [[330, G], [450, G - 70], [570, G]]);
+  const x = 450;
+  R('#f2efe8', x - 40, G - 130, 80, 60);
+  for (const [dx, h] of [[-44, 90], [0, 110], [44, 80]]) {
+    R('#f2efe8', x + dx - 10, G - 70 - h, 20, h);
+    P('#3a5a8a', [[x + dx - 13, G - 70 - h], [x + dx, G - 70 - h - 26], [x + dx + 13, G - 70 - h]]);
+  }
+  pine(300); pine(620, 44);
+}
+function sceneDenmark() {
+  sea('rgba(60,120,180,0.8)', 14);
+  const cols = ['#e0452b', '#ffae00', '#3aa0ff', '#2f8a5a', '#f4d9b0', '#e07aa0'];
+  for (let i = 0; i < 8; i++) {
+    const x = 250 + i * 34;
+    R(cols[i % cols.length], x, G - 70, 32, 56);
+    P('#6a3a2a', [[x - 2, G - 70], [x + 16, G - 88], [x + 34, G - 70]]);
+  }
+  const wx = 640;
+  P('#e8dcc0', [[wx - 18, G], [wx - 10, G - 70], [wx + 10, G - 70], [wx + 18, G]]);
+  ctx.save(); ctx.translate(wx, G - 70); ctx.rotate(0.4);
+  for (let a = 0; a < 4; a++) { ctx.rotate(Math.PI / 2); R('#8a6a4a', -4, 0, 8, 46); }
+  ctx.restore();
+}
+function sceneNorway() {
+  peak(280, 140, 170, 'rgba(80,100,130,0.85)', '#fff');
+  peak(620, 160, 180, 'rgba(70,90,120,0.85)', '#fff');
+  sea('rgba(50,110,170,0.85)', 20);
+  const x = 450;
+  R('#6a3a2a', x - 18, G - 50, 36, 30);
+  P('#3a2a1a', [[x - 24, G - 48], [x, G - 90], [x + 24, G - 48]]);
+}
+function sceneUK() {
+  backdrop(2, 'rgba(110,120,140,0.4)');
+  const x = 400;
+  R('#c9b07a', x - 16, G - 150, 32, 150);
+  R('#e8dcb0', x - 16, G - 140, 32, 28);
+  C('#fff', x, G - 126, 11); ctx.strokeStyle = '#333'; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(x, G - 126); ctx.lineTo(x, G - 133); ctx.moveTo(x, G - 126); ctx.lineTo(x + 5, G - 124); ctx.stroke();
+  P('#6a6a7a', [[x - 18, G - 150], [x, G - 190], [x + 18, G - 150]]);
+  ctx.strokeStyle = 'rgba(80,80,100,0.8)'; ctx.lineWidth = 3;
+  ctx.beginPath(); ctx.arc(600, G - 70, 62, 0, Math.PI * 2); ctx.stroke();
+  for (let a = 0; a < 8; a++) { ctx.beginPath(); ctx.moveTo(600, G - 70); ctx.lineTo(600 + Math.cos(a * Math.PI / 4) * 62, G - 70 + Math.sin(a * Math.PI / 4) * 62); ctx.stroke(); }
+  ctx.lineWidth = 1;
+}
+function sceneGreenland() {
+  skyTint('rgba(220,235,255,0.35)');
+  groundTint('rgba(255,255,255,0.7)');
+  sea('rgba(80,150,200,0.8)', 16);
+  for (const [x, w, h] of [[300, 50, 60], [420, 36, 40], [640, 60, 80]]) P('#f2f8ff', [[x - w, G - 12], [x - w * 0.3, G - h], [x + w * 0.4, G - h * 0.8], [x + w, G - 12]]);
+  E('#fff', 520, G, 34, 30, Math.PI, 0);
+  E('#3a4a5a', 520, G, 9, 12, Math.PI, 0);
+}
+function sceneCanada() {
+  peak(350, 170, 150, 'rgba(90,110,140,0.8)', '#fff');
+  peak(620, 150, 130, 'rgba(80,100,130,0.8)', '#fff');
+  hills('rgba(70,110,80,0.55)', 172, 14, 2);
+  for (const x of [250, 290, 520, 560, 700]) pine(x, 48 + (x % 3) * 8);
+}
+function sceneBermuda() {
+  sea('rgba(40,150,200,0.85)', 36);
+  const x = 400;
+  P('#f4f0e6', [[x - 14, G - 36], [x - 8, G - 130], [x + 8, G - 130], [x + 14, G - 36]]);
+  R('#e0452b', x - 10, G - 100, 20, 12); R('#e0452b', x - 10, G - 70, 20, 12);
+  R('#333', x - 10, G - 144, 20, 14); P('#e0452b', [[x - 12, G - 144], [x, G - 156], [x + 12, G - 144]]);
+  palm(620, 60);
+  P('#7a4a2a', [[520, G - 40], [590, G - 40], [580, G - 28], [530, G - 28]]);
+  P('#fff', [[555, G - 42], [555, G - 90], [585, G - 46]]);
+}
+function sceneJamaica() {
+  sea('rgba(40,170,200,0.85)', 24);
+  hills('rgba(60,120,70,0.7)', 120, 40, 5);
+  sunDisk(680, 40, 26);
+  palm(280); palm(360, 60); palm(560, 72); palm(640, 58);
+}
+function sceneColombia() {
+  hills('rgba(60,110,70,0.7)', 110, 50, 2);
+  hills('rgba(50,100,60,0.75)', 150, 30, 4);
+  for (let i = 0; i < 9; i++) { const x = 230 + i * 55; R('#5a3a2a', x - 3, G - 34, 6, 34); C('#3a8a3a', x, G - 44, 18 + (i % 3) * 4); }
+}
+function sceneBrazil() {
+  backdrop(3);
+  P('rgba(90,120,90,0.85)', [[520, G], [600, G - 150], [650, G - 140], [720, G]]);
+  const x = 620;
+  R('#f4f0ea', x - 4, G - 186, 8, 38);
+  R('#f4f0ea', x - 30, G - 180, 60, 6);
+  C('#f4f0ea', x, G - 192, 6);
+  palm(300); palm(370, 60);
+}
+function sceneArgentina() {
+  peak(620, 220, 170, 'rgba(100,110,140,0.8)', '#fff');
+  groundTint('rgba(200,200,110,0.25)');
+  hills('rgba(150,160,90,0.55)', 172, 14, 1);
+  const x = 380;
+  P('#f4f0ea', [[x - 10, G], [x - 6, G - 140], [x, G - 156], [x + 6, G - 140], [x + 10, G]]);
+}
+function sceneMachuPicchu() {
+  P('rgba(60,110,70,0.85)', [[430, G], [520, G - 170], [560, G - 160], [640, G]]);
+  hills('rgba(70,110,80,0.6)', 120, 30, 2);
+  for (let i = 0; i < 5; i++) R('#a89a80', 280 + i * 12, G - 20 - i * 14, 200 - i * 24, 14);
+  for (let i = 0; i < 4; i++) R('#8a7a60', 300 + i * 38, G - 90, 24, 16);
+}
+function sceneEaster() {
+  sea('rgba(50,140,200,0.85)', 16);
+  hills('rgba(90,140,80,0.8)', 172, 12, 3);
+  for (const x of [330, 400, 470, 540, 610]) {
+    R('#6a6a6a', x - 14, G - 70, 28, 60);
+    R('#6a6a6a', x - 18, G - 84, 32, 20);
+    R('#4a4a4a', x - 4, G - 64, 10, 16);
+    R('#3a3a3a', x - 16, G - 70, 12, 4);
+  }
+}
+function sceneMexico() {
+  groundTint('rgba(220,190,120,0.35)');
+  backdrop(2, 'rgba(160,140,110,0.4)');
+  const x = 460;
+  for (let i = 0; i < 6; i++) R('#b8a078', x - 90 + i * 14, G - 16 - i * 16, 180 - i * 28, 16);
+  R('#9a8460', x - 12, G - 120, 24, 24);
+  for (const cx of [270, 680]) {
+    R('#3f8a3a', cx - 7, G - 60, 14, 60);
+    R('#3f8a3a', cx - 22, G - 40, 10, 20); R('#3f8a3a', cx - 22, G - 44, 22, 8);
+    R('#3f8a3a', cx + 12, G - 50, 10, 24); R('#3f8a3a', cx + 4, G - 30, 18, 8);
+  }
+}
+function sceneNasa() {
+  skyTint('rgba(40,60,120,0.2)');
+  backdrop(4);
+  const x = 460;
+  ctx.strokeStyle = '#8a8a9a'; ctx.lineWidth = 3;
+  for (let y = G; y > G - 170; y -= 20) { ctx.beginPath(); ctx.moveTo(x + 30, y); ctx.lineTo(x + 50, y - 20); ctx.stroke(); }
+  R('#8a8a9a', x + 30, G - 170, 4, 170); R('#8a8a9a', x + 50, G - 170, 4, 170);
+  ctx.lineWidth = 1;
+  R('#f4f4f4', x - 12, G - 160, 24, 140);
+  P('#f4f4f4', [[x - 12, G - 160], [x, G - 196], [x + 12, G - 160]]);
+  R('#e0452b', x - 12, G - 100, 24, 10);
+  P('#3a3a4a', [[x - 12, G - 20], [x - 26, G], [x - 12, G - 6]]);
+  P('#3a3a4a', [[x + 12, G - 20], [x + 26, G], [x + 12, G - 6]]);
+}
+function sceneVegas() {
+  skyTint('rgba(60,20,90,0.45)');
+  groundTint('rgba(220,190,130,0.3)');
+  const cols = ['#ff5ac8', '#ffe25a', '#5ae0ff', '#ff8a3a', '#9aff5a'];
+  for (let i = 0; i < 10; i++) {
+    const x = 240 + i * 44, h = 60 + (i * 37) % 90;
+    R('rgba(40,30,60,0.85)', x, G - h, 36, h);
+    for (let y = G - h + 8; y < G - 10; y += 14) R(cols[(i + y) % cols.length], x + 6, y, 24, 4);
+  }
+  R('#ffe25a', 420, G - 176, 60, 26);
+  R('#e0452b', 424, G - 172, 52, 18);
+}
+function sceneHollywood() {
+  hills('rgba(120,140,90,0.75)', 110, 40, 1);
+  hills('rgba(100,130,80,0.7)', 160, 20, 3);
+  ctx.font = 'bold 30px sans-serif'; ctx.textAlign = 'center'; ctx.fillStyle = '#fff';
+  const letters = 'HOLLYWOOD';
+  for (let i = 0; i < letters.length; i++) ctx.fillText(letters[i], 330 + i * 30, 112 + Math.sin(i * 0.7) * 4);
+}
+function sceneAlaska() {
+  groundTint('rgba(255,255,255,0.6)');
+  peak(450, 230, 190, 'rgba(110,130,160,0.85)', '#fff');
+  peak(700, 140, 120, 'rgba(100,120,150,0.8)', '#fff');
+  for (const x of [240, 300, 600, 650]) pine(x, 52, true);
+}
+function sceneHawaii() {
+  sea('rgba(40,160,210,0.85)', 26);
+  peak(560, 190, 130, 'rgba(90,80,80,0.85)');
+  P('rgba(230,90,40,0.8)', [[545, G - 128], [560, G - 130], [575, G - 128], [566, G - 100], [554, G - 104]]);
+  sunDisk(260, 50, 28, 'rgba(255,170,90,0.85)');
+  palm(330); palm(380, 58); palm(700, 70);
+}
+function sceneMoon() {
+  skyTint('rgba(8,8,30,0.96)');
+  stars(40, 3);
+  C('#3a7ad0', 700, 40, 34); C('#4aa84a', 690, 30, 12); C('#4aa84a', 712, 52, 9);
+  groundTint('rgba(170,170,180,0.95)');
+  hills('rgba(150,150,160,1)', 165, 25, 2);
+  for (const [x, y, r] of [[150, 230, 16], [380, 260, 24], [600, 240, 14], [760, 280, 20]]) E('rgba(120,120,130,0.9)', x, y, r, r * 0.35);
+}
+function sceneAbyss() {
+  skyTint('rgba(10,50,120,0.8)');
+  groundTint('rgba(20,60,110,0.6)');
+  for (let i = 0; i < 14; i++) {
+    ctx.strokeStyle = 'rgba(200,240,255,0.6)'; ctx.beginPath(); ctx.arc((i * 131) % W, (i * 67) % 160, 3 + (i % 3) * 2, 0, Math.PI * 2); ctx.stroke();
+  }
+  for (const x of [260, 300, 620, 680]) {
+    ctx.strokeStyle = '#2f8a5a'; ctx.lineWidth = 5;
+    ctx.beginPath(); ctx.moveTo(x, G); ctx.bezierCurveTo(x - 14, G - 30, x + 14, G - 60, x, G - 90); ctx.stroke();
+  }
+  ctx.lineWidth = 1;
+  for (let i = 0; i < 4; i++) R('rgba(120,130,150,0.8)', 400 + i * 30, G - 30 - (i % 2) * 30, 18, 30 + (i % 2) * 30);
+}
+function sceneFloating() {
+  skyTint('rgba(200,150,255,0.35)');
+  groundTint('rgba(255,255,255,0.55)');
+  for (const [x, y, w] of [[330, 70, 70], [520, 40, 100], [700, 100, 50]]) {
+    P('#8a6a4a', [[x - w, y], [x + w, y], [x + w * 0.3, y + w * 0.8], [x - w * 0.2, y + w * 0.6]]);
+    E('#5aa84a', x, y, w, 10);
+    R('rgba(170,220,255,0.7)', x + w * 0.5, y, 5, 120);
+  }
+}
+function sceneParty() {
+  backdrop(5);
+  ctx.strokeStyle = '#6a4a2a'; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(150, 30); ctx.quadraticCurveTo(450, 90, 750, 30); ctx.stroke(); ctx.lineWidth = 1;
+  const cols = ['#e0452b', '#ffae00', '#3aa0ff', '#36a426', '#b040e0'];
+  for (let i = 0; i < 14; i++) {
+    const t = i / 13, x = 150 + t * 600, y = 30 + Math.sin(t * Math.PI) * 45;
+    P(cols[i % 5], [[x - 12, y], [x + 12, y], [x, y + 22]]);
+  }
+  ctx.save(); ctx.translate(450, 140); ctx.scale(3, 3);
+  C('#fff', -11, -4, 5); C('#fff', -11, 4, 5); C('#fff', 11, -4, 5); C('#fff', 11, 4, 5); R('#fff', -11, -4, 22, 8);
+  ctx.restore();
+}
+function sceneVolcano() {
+  skyTint('rgba(160,40,20,0.45)');
+  groundTint('rgba(60,30,20,0.4)');
+  peak(460, 220, 170, 'rgba(60,40,40,0.9)');
+  P('rgba(255,120,40,0.9)', [[440, G - 168], [460, G - 172], [480, G - 168], [470, G - 120], [450, G - 130]]);
+  for (let i = 0; i < 8; i++) C('rgba(255,150,60,0.8)', 430 + (i * 23) % 60, G - 190 - (i * 17) % 60, 3 + i % 3);
+}
+function sceneStorm() {
+  skyTint('rgba(40,45,60,0.7)');
+  backdrop(3, 'rgba(60,70,90,0.6)', 'rgba(50,70,60,0.6)');
+  ctx.strokeStyle = 'rgba(200,210,230,0.5)'; ctx.lineWidth = 1.5;
+  for (let i = 0; i < 40; i++) { const x = (i * 97) % W, y = (i * 53) % 180 - 20; ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x - 6, y + 16); ctx.stroke(); }
+  ctx.lineWidth = 1;
+  P('rgba(255,240,150,0.85)', [[610, -30], [590, 30], [604, 30], [584, 90], [620, 20], [606, 20], [626, -30]]);
+}
+
+function sceneNight() {
+  skyTint('rgba(20,20,60,0.65)');
+  groundTint('rgba(30,20,50,0.35)');
+  stars(40, 3);
+  C('rgba(255,245,200,0.95)', 720, 30, 30);
+  C('rgba(20,20,60,0.65)', 708, 22, 26);
+  backdrop(4, 'rgba(40,40,80,0.6)', 'rgba(40,60,50,0.6)');
+  for (const x of [180, 260, 520, 600]) {
+    R('#8a8a9a', x - 10, G - 30, 20, 30); C('#8a8a9a', x, G - 30, 10);
+    R('#5a5a6a', x - 5, G - 26, 10, 2); R('#5a5a6a', x - 1, G - 32, 2, 12);
+  }
+  for (const x of [340, 440]) {
+    E('#f08a20', x, G - 10, 13, 10);
+    P('#ffe25a', [[x - 7, G - 13], [x - 3, G - 13], [x - 5, G - 17]]);
+    P('#ffe25a', [[x + 3, G - 13], [x + 7, G - 13], [x + 5, G - 17]]);
+    R('#ffe25a', x - 6, G - 8, 12, 3);
+    R('#3a8a2a', x - 1, G - 23, 3, 5);
+  }
+}
+
+// 미래편: the same world under alien occupation.
+function futureOverlay() {
+  skyTint('rgba(70,20,110,0.32)');
+  groundTint('rgba(90,40,120,0.18)');
+  const x = 760, y = 20;
+  E('#b8c0d0', x, y, 34, 9);
+  E('rgba(120,255,200,0.8)', x, y - 6, 14, 10, Math.PI, 0);
+  P('rgba(150,255,210,0.18)', [[x - 12, y + 6], [x + 12, y + 6], [x + 40, G], [x - 40, G]]);
+}
+
+const SCENES = {
+  korea: drawKorea, china: drawChina, japan: drawJapan, newyork: drawUSA,
+  mongolia: sceneMongolia, thailand: sceneThailand, cambodia: sceneCambodia, philippines: scenePhilippines,
+  australia: sceneAustralia, singapore: sceneSingapore, maldives: sceneMaldives, india: sceneIndia, nepal: sceneNepal,
+  dubai: sceneDubai, saudi: sceneSaudi, kenya: sceneKenya, madagascar: sceneMadagascar, southafrica: sceneSouthAfrica,
+  ghana: sceneGhana, sahara: sceneSahara, egypt: sceneEgypt, turkey: sceneTurkey, russia: sceneRussia, greece: sceneGreece,
+  italy: sceneItaly, monaco: sceneMonaco, spain: sceneSpain, france: sceneFrance, germany: sceneGermany,
+  denmark: sceneDenmark, norway: sceneNorway, uk: sceneUK, greenland: sceneGreenland, canada: sceneCanada,
+  bermuda: sceneBermuda, jamaica: sceneJamaica, colombia: sceneColombia, brazil: sceneBrazil, argentina: sceneArgentina,
+  machupicchu: sceneMachuPicchu, easter: sceneEaster, mexico: sceneMexico, nasa: sceneNasa, vegas: sceneVegas,
+  hollywood: sceneHollywood, alaska: sceneAlaska, hawaii: sceneHawaii, moon: sceneMoon, abyss: sceneAbyss,
+  floating: sceneFloating, party: sceneParty, volcano: sceneVolcano, storm: sceneStorm, night: sceneNight,
+};
+
+function drawStageScenery(s) {
+  SCENES[s.scene]();
+  if (s.alien) futureOverlay();
+}
+
+// ---- Rendering ----
+function drawBackground(c, w, h, yOffset) {
+  const bg = IMAGES.background;
+  if (ready(bg)) {
+    c.drawImage(bg, 0, yOffset, w, 360);
+  } else {
+    c.fillStyle = '#8fd6ff'; c.fillRect(0, 0, w, h);
+    c.fillStyle = '#9ad84a'; c.fillRect(0, 227 + yOffset, w, h);
+  }
+}
+
+function drawUnit(u) {
+  const facing = DIR[u.side];
+  let x = u.x;
+  let y = LANE_Y + u.yOff;
+  if (u.atkAnim > 0) x += facing * Math.sin(Math.PI * (1 - u.atkAnim / 0.25)) * 8;
+  if (u.kbT > 0) y -= Math.sin(Math.PI * (1 - u.kbT / KB_TIME)) * 22;
+  const drawSize = u.size * 1.45;
+  y -= u.fly;
+  ctx.fillStyle = 'rgba(0,0,0,0.18)';
+  ctx.beginPath(); ctx.ellipse(u.x, LANE_Y + u.yOff, drawSize * 0.45, 4, 0, 0, Math.PI * 2); ctx.fill();
+  if (u.alien) {
+    const g = ctx.createRadialGradient(x, y - drawSize * 0.45, 2, x, y - drawSize * 0.45, drawSize * 0.75);
+    g.addColorStop(0, 'rgba(190,90,255,0.55)');
+    g.addColorStop(1, 'rgba(190,90,255,0)');
+    ctx.fillStyle = g;
+    ctx.beginPath(); ctx.arc(x, y - drawSize * 0.45, drawSize * 0.75, 0, Math.PI * 2); ctx.fill();
+  }
+  drawCritter(ctx, x, y, drawSize, u.look, u.anim, facing, u.state === 'walk' && u.kbT <= 0);
+  if (u.rarity && u.rarity !== 'N') outlinedText(ctx, RARITY_NAMES[u.rarity], x, y - drawSize * 1.1 - 6, 13, RARITY_COLORS[u.rarity]);
+}
+
+function drawEffect(e) {
+  const p = 1 - e.t / e.max;
+  ctx.save();
+  if (e.type === 'spark') {
+    ctx.strokeStyle = '#fff'; ctx.lineWidth = 3; ctx.globalAlpha = 1 - p;
+    const r = 6 + p * 14;
+    ctx.beginPath();
+    for (let a = 0; a < 8; a++) {
+      const ang = a * Math.PI / 4;
+      ctx.moveTo(e.x + Math.cos(ang) * r * 0.4, e.y + Math.sin(ang) * r * 0.4);
+      ctx.lineTo(e.x + Math.cos(ang) * r, e.y + Math.sin(ang) * r);
+    }
+    ctx.stroke();
+    ctx.strokeStyle = '#ffe25a'; ctx.lineWidth = 1.5; ctx.stroke();
+  } else if (e.type === 'shot') {
+    ctx.globalAlpha = 1 - p;
+    ctx.strokeStyle = '#ffe25a'; ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.moveTo(e.x1, e.y1); ctx.lineTo(e.x2, e.y2); ctx.stroke();
+  } else if (e.type === 'soul') {
+    const y = e.y - p * 60;
+    ctx.globalAlpha = 1 - p;
+    ctx.lineWidth = 2; ctx.strokeStyle = OUT; ctx.fillStyle = '#fff';
+    ctx.beginPath(); ctx.arc(e.x, y, 8, Math.PI, 0); ctx.lineTo(e.x + 8, y + 10); ctx.lineTo(e.x + 3, y + 7); ctx.lineTo(e.x - 2, y + 10); ctx.lineTo(e.x - 8, y + 7); ctx.closePath(); ctx.fill(); ctx.stroke();
+    ctx.strokeStyle = '#ffd54a'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.ellipse(e.x, y - 12, 7, 2.5, 0, 0, Math.PI * 2); ctx.stroke();
+  } else if (e.type === 'beam') {
+    ctx.globalAlpha = 1 - p;
+    const front = PLAYER_TOWER_X - Math.min(1, p * 3) * W;
+    const grad = ctx.createLinearGradient(0, LANE_Y - 60, 0, LANE_Y);
+    grad.addColorStop(0, 'rgba(255,255,255,0)');
+    grad.addColorStop(0.5, 'rgba(255,240,140,0.9)');
+    grad.addColorStop(1, 'rgba(255,255,255,0)');
+    ctx.fillStyle = grad;
+    ctx.fillRect(front, LANE_Y - 60, PLAYER_TOWER_X - front, 60);
+  } else if (e.type === 'text') {
+    ctx.globalAlpha = Math.min(1, e.t / 0.3);
+    outlinedText(ctx, e.text, e.x, e.y - p * (e.rise || 0), e.px, e.color);
+  }
+  ctx.restore();
+}
+
+function draw() {
+  drawBackground(ctx, W, H, 0);
+  ctx.save();
+  ctx.translate(0, SCENERY_SHIFT);
+  drawStageScenery(stage);
+  ctx.restore();
+
+  drawCatBase(ctx, towers.enemy.x, LANE_Y + 8, towers.enemy.shake);
+  drawDogBase(ctx, towers.player.x, LANE_Y + 8, towers.player.shake);
+  outlinedText(ctx, `${Math.max(0, Math.ceil(towers.enemy.hp))}/${towers.enemy.maxHp}`, towers.enemy.x, LANE_Y + 8 - BASE_H - 8, 20, '#fff');
+  outlinedText(ctx, `${Math.max(0, Math.ceil(towers.player.hp))}/${towers.player.maxHp}`, towers.player.x, LANE_Y + 8 - BASE_H - 8, 20, '#fff');
+
+  for (const unit of [...units].sort((a, b) => a.yOff - b.yOff)) drawUnit(unit);
+  for (const e of effects) drawEffect(e);
+
+  // HUD
+  $('money').textContent = `${Math.floor(money)}/${walletMax()}${CURRENCY}`;
+  for (const { el, id, mask, num } of slotEls) {
+    const def = UNIT_TYPES[id];
+    const left = cooldowns[id] || 0;
+    const cooling = left > 0;
+    el.classList.toggle('cant', money < def.cost || gameOver);
+    el.classList.toggle('cooling', cooling);
+    if (cooling) {
+      mask.style.height = (left / def.cd * 100) + '%';
+      num.textContent = left >= 1 ? Math.ceil(left) : left.toFixed(1);
+    }
+  }
+  const maxed = workerLv >= WORKER_MAX;
+  $('workerLv').textContent = maxed ? 'MAX' : `레벨 ${workerLv}`;
+  $('workerCost').textContent = maxed ? '' : `${workerCost()}${CURRENCY}`;
+  $('workerBtn').disabled = maxed || money < workerCost() || gameOver;
+
+  const cannonBtn = $('cannonBtn');
+  const cannonReady = cannonCharge >= CANNON_MAX && !gameOver;
+  cannonBtn.style.setProperty('--p', cannonCharge / CANNON_MAX * 100);
+  cannonBtn.classList.toggle('ready', cannonReady);
+  cannonBtn.disabled = !cannonReady;
+}
+
+// Lobby: the squad marching in place in front of the base.
+const lobbyCanvas = $('lobbyCanvas');
+const lctx = lobbyCanvas.getContext('2d');
+function drawLobby(time) {
+  const w = lobbyCanvas.width, h = lobbyCanvas.height;
+  const yOff = h - 360;
+  const ground = LANE_Y + yOff;
+  drawBackground(lctx, w, h, yOff);
+  drawDogBase(lctx, w - 80, ground + 8, 0);
+  save.squad.forEach((id, i) => {
+    const size = UNIT_TYPES[id].size * 1.45;
+    drawCritter(lctx, w - 170 - i * 54, ground + (i % 2) * 5, size, UNIT_LOOKS[id], time * 7 + i, -1, true);
+  });
+  drawCritter(lctx, 70, ground, 52, CAT_LOOKS.bigCat, time * 2, 1, false);
+  drawCritter(lctx, 130, ground + 5, 38, CAT_LOOKS.cat, time * 2 + 1.5, 1, false);
+}
+
+let lastTime = performance.now();
+function loop(now) {
+  const dt = Math.min(0.05, (now - lastTime) / 1000);
+  lastTime = now;
+  if (stage) {
+    update(dt);
+    draw();
+  } else if (activeScreen === 'lobby') {
+    drawLobby(now / 1000);
+  }
+  requestAnimationFrame(loop);
+}
+showScreen('lobby');
+requestAnimationFrame(loop);
+</script>
+</body>
+</html>
