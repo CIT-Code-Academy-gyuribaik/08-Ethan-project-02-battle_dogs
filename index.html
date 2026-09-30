@@ -123,22 +123,56 @@
   /* ---- Gacha ---- */
   #gachaMachine { width: 100%; max-width: 560px; padding: 18px; display: flex; flex-direction: column; align-items: center; gap: 12px; }
   #gachaMachine .gTitle { font-size: 32px; color: #fff; text-shadow: var(--ol); }
-  .bigCapsule { width: 110px; height: 110px; position: relative; animation: wobble 2.4s ease-in-out infinite; }
-  @keyframes wobble { 0%, 100% { transform: rotate(-6deg); } 50% { transform: rotate(6deg); } }
-  #gachaRates { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
-  #gachaRates span { background: var(--r); color: #fff; text-shadow: var(--ol-thin); font-size: 14px; padding: 3px 9px; border: 2px solid #111; border-radius: 10px; }
+  /* dog-head capsule machine */
+  .machineRow { display: flex; gap: 18px; align-items: center; justify-content: center; flex-wrap: wrap; }
+  .dogMachine { width: 170px; height: 204px; overflow: visible; }
+  .dogMachine .crank { transform-box: fill-box; transform-origin: center; }
+  .dogMachine .domeCaps { transform-box: view-box; transform-origin: 100px 100px; }
+  .dogMachine .head { transform-box: fill-box; transform-origin: 50% 100%; animation: wobble 2.4s ease-in-out infinite; }
+  .dogMachine.cranking .crank { animation: crank 0.75s ease-in-out; }
+  .dogMachine.cranking .domeCaps { animation: jiggle 0.25s ease-in-out 3; }
+  .dogMachine.cranking .head { animation: jiggle 0.25s ease-in-out 3; }
+  @keyframes crank { to { transform: rotate(360deg); } }
+  @keyframes jiggle { 0%, 100% { transform: rotate(0); } 33% { transform: rotate(-5deg); } 66% { transform: rotate(5deg); } }
+  @keyframes wobble { 0%, 100% { transform: rotate(-4deg); } 50% { transform: rotate(4deg); } }
+  .machineLabel { font-size: 22px; color: #fff; text-shadow: var(--ol); text-align: center; }
+  #platBox { width: 100%; border-top: 3px dashed #c9b48a; padding-top: 14px; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+  #platBox .gTitle { font-size: 26px; color: #dff0ff; text-shadow: var(--ol); }
+  .bcBtn.plat { background: linear-gradient(#f4fbff, #9ab8d8); }
+  /* tickets */
+  .tk { display: inline-flex; align-items: center; gap: 4px; margin-left: 10px; vertical-align: middle; }
+  .tk svg { width: 34px; height: 22px; }
+  #gachaBtn { position: relative; }
+  #gachaBadge { position: absolute; top: -10px; right: -10px; min-width: 30px; height: 30px; padding: 0 7px; border-radius: 15px;
+    background: #ff3a3a; border: 3px solid #111; font-size: 16px; line-height: 24px; text-shadow: var(--ol-thin); display: none; }
+  #gachaBadge.show { display: block; }
+  #gachaRates, #platRates { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+  #platRates { flex-direction: column; }
+  #gachaRates span, #platRates span { background: var(--r); color: #fff; text-shadow: var(--ol-thin); font-size: 14px; padding: 3px 9px; border: 2px solid #111; border-radius: 10px; }
   #gachaButtons { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; }
   #gachaButtons .bcBtn { font-size: 24px; line-height: 1.1; }
   #gachaButtons .bcBtn small { display: block; font-size: 15px; }
-  #gachaNote { font-size: 14px; color: #7a6040; text-align: center; line-height: 1.5; }
+  #gachaNote, .platNote { font-size: 14px; color: #7a6040; text-align: center; line-height: 1.5; }
   #gachaResults { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin-top: 20px; max-width: 760px; }
 
   .capsule { position: relative; width: 150px; height: 150px; }
   .capTop, .capBot { position: absolute; left: 0; width: 100%; height: 50%; border: 5px solid #111; transition: transform 0.45s ease-in, opacity 0.45s; }
   .capTop { top: 0; border-radius: 999px 999px 0 0; background: var(--cap, #3aa0ff); border-bottom-width: 3px; }
   .capBot { bottom: 0; border-radius: 0 0 999px 999px; background: #fff; border-top-width: 3px; }
-  .capTop::after { content: ''; position: absolute; left: 18%; top: 22%; width: 22%; height: 22%; border-radius: 50%; background: rgba(255,255,255,0.6); }
-  .bigCapsule .capTop, .bigCapsule .capBot { border-width: 4px; }
+  .capTop::after { content: ''; position: absolute; left: 22%; top: 16%; width: 16%; height: 18%; border-radius: 50%; background: rgba(255,255,255,0.6); }
+  /* dog capsule: floppy ears, a face on the colored half, a paw print on the white half */
+  .capTop i, .capBot i { position: absolute; display: block; }
+  .capTop .ear { top: 4%; width: 30%; height: 92%; background: #8a5a32; border: 5px solid #111; border-radius: 50% 50% 45% 45% / 35% 35% 65% 65%; z-index: -1; }
+  .capTop .ear.l { left: -17%; transform: rotate(22deg); }
+  .capTop .ear.r { right: -17%; transform: rotate(-22deg); }
+  .capTop .eye { top: 50%; width: 9%; height: 15%; background: #111; border-radius: 50%; }
+  .capTop .eye.l { left: 33%; } .capTop .eye.r { right: 33%; }
+  .capTop .nose { top: 73%; left: 50%; width: 16%; height: 13%; margin-left: -8%; background: #111; border-radius: 45% 45% 60% 60%; }
+  .capBot .mouth { top: -2%; left: 50%; width: 22%; height: 20%; margin-left: -11%; border: 4px solid #111; border-top: 0; border-radius: 0 0 50% 50%; }
+  .capBot .tongue { top: 14%; left: 50%; width: 10%; height: 16%; margin-left: -5%; background: #ff7a8a; border: 3px solid #111; border-top: 0; border-radius: 0 0 50% 50%; }
+  .capBot .paw { bottom: 16%; left: 50%; width: 22%; height: 22%; margin-left: -11%; border-radius: 50%; background: #e8dcc8; }
+  .capBot .paw::before { content: ''; position: absolute; left: -12%; top: -50%; width: 36%; height: 36%; border-radius: 50%; background: #e8dcc8;
+    box-shadow: 13px -5px 0 #e8dcc8, 26px 0 0 #e8dcc8; }
 
   #capsuleOverlay {
     position: fixed; inset: 0; display: none; flex-direction: column; align-items: center; justify-content: center;
@@ -236,7 +270,7 @@
   <div class="screen" id="lobby">
     <div class="frame"><canvas id="lobbyCanvas" width="900" height="270"></canvas></div>
     <div id="lobbyMenu">
-      <button class="bcBtn purple sideBig" id="gachaBtn"><span class="ico">🥚</span>레어<br>뽑기</button>
+      <button class="bcBtn purple sideBig" id="gachaBtn"><span id="gachaBadge"></span><span class="ico">🥚</span>레어<br>뽑기</button>
       <button class="bcBtn red" id="battleBig">전투 개시!<small id="playSub"></small></button>
       <button class="bcBtn blue sideBig" id="dogsBtn"><span class="ico">🐾</span>편성<br><span id="dogsSub" style="font-size:14px"></span></button>
     </div>
@@ -263,13 +297,26 @@
     </div>
     <div class="panel" id="gachaMachine">
       <div class="gTitle">레어 캡슐</div>
-      <div class="capsule bigCapsule rL" style="--cap: var(--r)"><div class="capTop"></div><div class="capBot"></div></div>
+      <div class="machineRow">
+        <svg class="dogMachine" id="rareMachine" viewBox="0 0 200 240"></svg>
+      </div>
       <div id="gachaRates"></div>
       <div id="gachaButtons">
         <button class="bcBtn" id="pull1">1회 뽑기<small>🦴 100</small></button>
         <button class="bcBtn red" id="pull10">10연차<small>🦴 900</small></button>
+        <button class="bcBtn green" id="pullT1">티켓 1장<small id="pullT1Sub"></small></button>
+        <button class="bcBtn green" id="pullT10">티켓 10장<small>슈퍼레어 이상 확정</small></button>
       </div>
-      <div id="gachaNote">10연차는 슈퍼레어 이상 1마리 확정!<br>중복되면 레벨업 (체력·공격력 +10%, 최대 Lv 10)</div>
+      <div id="gachaNote">10연차는 슈퍼레어 이상 1마리 확정!<br>레어 티켓은 스테이지 클리어로 획득 · 중복되면 레벨업</div>
+      <div id="platBox">
+        <div class="gTitle">플래티넘 캡슐</div>
+        <div class="machineRow">
+          <svg class="dogMachine" id="platMachine" viewBox="0 0 200 240" style="width:130px;height:156px"></svg>
+          <div id="platRates"></div>
+        </div>
+        <button class="bcBtn plat" id="pullPlat">플래티넘 티켓 사용<small id="pullPlatSub"></small></button>
+        <div class="platNote">울트라슈퍼레어 이상 확정! 각 챕터 마지막 스테이지 첫 클리어 보상</div>
+      </div>
     </div>
     <div id="gachaResults"></div>
   </div>
@@ -320,7 +367,10 @@
     <button class="bcBtn small" id="skipBtn">건너뛰기 ▶▶</button>
     <div id="capStage">
       <div id="capRays"></div>
-      <div class="capsule" id="capsule"><div class="capTop"></div><div class="capBot"></div></div>
+      <div class="capsule" id="capsule">
+        <div class="capTop"><i class="ear l"></i><i class="ear r"></i><i class="eye l"></i><i class="eye r"></i><i class="nose"></i></div>
+        <div class="capBot"><i class="mouth"></i><i class="tongue"></i><i class="paw"></i></div>
+      </div>
       <div id="revealCard"></div>
     </div>
     <div id="capHint"></div>
@@ -357,6 +407,10 @@ loadImage('dogTower', 'assets/dog_tower_cut.png');
 loadImage('catTower', 'assets/cat_tower_cut.png');
 loadImage('tankCat', 'assets/tank_cat_cut.png');
 loadImage('bossCat', 'assets/boss_cat_cut.png');
+loadImage('face', 'assets/face_cut.png');
+loadImage('yaongma', 'assets/yaongma_cut.png');
+loadImage('yaongmaAtk', 'assets/yaongma_attack_cut.png');
+loadImage('dragon', 'assets/dragon_cut.png');
 function ready(img) { return img && img.complete && img.naturalWidth > 0; }
 
 const CANNON_MAX = 100;
@@ -367,6 +421,7 @@ let cannonCharge = 0;
 // ---- Our army ----
 // starter: owned from the beginning and never in the gacha pool.
 // rarity: N 기본, C 레어, R 슈퍼레어, E 울트라슈퍼레어, L 레전드레어.
+// unlock: earned by clearing a stage instead of from the gacha (text shown on the locked card).
 // cd: cooltime in seconds before the same unit can be deployed again. kb: knockbacks before death.
 const UNIT_TYPES = {
   doggo:    { name: '멍뭉이', rarity: 'N', starter: true, cost: 50,  cd: 2.5, hp: 120, atk: 12, range: 25,  speed: 45, atkCooldown: 1.0, size: 26, kb: 2 },
@@ -384,6 +439,9 @@ const UNIT_TYPES = {
   cobra:    { name: '킹코브라', rarity: 'R', cost: 110, cd: 5.0, hp: 100, atk: 26, range: 140, speed: 40, atkCooldown: 1.6, size: 26, kb: 2 },
   bear:     { name: '곰선생',     rarity: 'E', cost: 190, cd: 9.0, hp: 560, atk: 30, range: 35,  speed: 32, atkCooldown: 1.3, size: 36, kb: 3, area: true },
   orangutan:{ name: '오랑우탄', rarity: 'E', cost: 200, cd: 10,  hp: 300, atk: 34, range: 110, speed: 30, atkCooldown: 1.7, size: 34, kb: 3, area: true },
+  face:     { name: '얼굴',     rarity: 'L', unlock: '세계편 1장 달 클리어 보상', cost: 300, cd: 15, hp: 900, atk: 60, range: 60, speed: 30, atkCooldown: 1.5, size: 40, kb: 4, area: true, fly: 10 },
+  yaongma:  { name: '야옹마',   rarity: 'L', unlock: '세계편 2장 달 클리어 보상', cost: 300, cd: 14, hp: 1000, atk: 70, range: 120, speed: 20, atkCooldown: 1.6, size: 40, kb: 4, area: true },
+  dragon:   { name: '거대 드래곤', rarity: 'L', unlock: '세계편 3장 달 클리어 보상', cost: 400, cd: 20, hp: 1800, atk: 110, range: 50, speed: 28, atkCooldown: 1.8, size: 48, kb: 4, area: true, fly: 24 },
   elephant: { name: '코끼리',   rarity: 'L', cost: 280, cd: 14,  hp: 1100, atk: 40, range: 45, speed: 26, atkCooldown: 1.4, size: 40, kb: 3, area: true },
 };
 const UNIT_LOOKS = {
@@ -402,6 +460,12 @@ const UNIT_LOOKS = {
   cobra:    { kind: 'snake', body: '#7ab84a' },
   bear:     { kind: 'quad', body: '#8a5a32', wide: true, headR: 13, ear: 'nub', tail: 'stub', legs: 0.8 },
   orangutan:{ kind: 'ape', body: '#c8622a', face: '#f0c090' },
+  face:     { kind: 'sprite', img: 'face', src: 'assets/face_cut.png', height: 44, fallback: { kind: 'blobcat', body: '#ffffff' } },
+  // attackImg: shown while attacking; attackHeight is its height relative to the normal picture.
+  yaongma:  { kind: 'sprite', img: 'yaongma', attackImg: 'yaongmaAtk', attackHeight: 1.079, src: 'assets/yaongma_cut.png', height: 56,
+              fallback: { kind: 'quad', body: '#e0452b', headR: 10, ear: 'pointy', legs: 1.2, tail: 'cat' } },
+  dragon:   { kind: 'sprite', img: 'dragon', src: 'assets/dragon_cut.png', height: 58, aura: true,
+              fallback: { kind: 'dragon', body: '#d0452b', belly: '#ffd54a', wing: '#8a2a1a' } },
   elephant: { kind: 'quad', body: '#9aa0ad', wide: true, headR: 14, ear: 'fan', trunk: true, noSnout: true, tail: 'stub', legs: 0.9, crown: true, aura: true },
 };
 const RARITY_NAMES = { N: '기본', C: '레어', R: '슈퍼레어', E: '울트라슈퍼레어', L: '레전드레어' };
@@ -417,6 +481,27 @@ const MAX_SQUAD = 10;
 const PULL_COST = 100;
 const PULL10_COST = 900;
 const MAXED_DUPE_REFUND = 20;
+// Tickets: 레어 티켓 = one rare capsule, 플래티넘 티켓 = one capsule with 울트라슈퍼레어 or better.
+const PLAT_RATES = [['L', 20], ['E', 80]];
+const TICKET_NAMES = { rare: '레어 티켓', plat: '플래티넘 티켓' };
+function ticketSvg(kind) {
+  const [a, b] = kind === 'plat' ? ['#f4fbff', '#8fb0d4'] : ['#ffe98a', '#f0a800'];
+  return `<svg viewBox="0 0 34 22"><defs><linearGradient id="tg${kind}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${a}"/><stop offset="1" stop-color="${b}"/></linearGradient></defs>
+    <path d="M2 2h30v6a3 3 0 0 0 0 6v6H2v-6a3 3 0 0 0 0-6z" fill="url(#tg${kind})" stroke="#111" stroke-width="2" stroke-linejoin="round"/>
+    <path d="M23 3v16" stroke="#111" stroke-width="1.2" stroke-dasharray="2 2"/>
+    <g fill="#111"><ellipse cx="12.5" cy="13" rx="3.4" ry="2.8"/><circle cx="8.6" cy="8.8" r="1.4"/><circle cx="11.2" cy="7.2" r="1.4"/><circle cx="13.8" cy="7.2" r="1.4"/><circle cx="16.4" cy="8.8" r="1.4"/></g></svg>`;
+}
+// Stage tickets: first clears every 8th story stage and events give 레어 티켓, a chapter's last stage
+// also gives a 플래티넘 티켓, and any other win has a 10% chance at a 레어 티켓.
+function ticketReward(s, won, firstClear) {
+  const t = { rare: 0, plat: 0 };
+  if (!won) return t;
+  if (firstClear && s.chapter === 'event') { t.rare = 2; if (s.evId === 'bossrush') t.plat = 1; }
+  else if (firstClear && s.num % 8 === 0) t.rare = 1;
+  if (firstClear && s.num === CHAPTER_LEN[s.chapter]) t.plat = 1;
+  if (!t.rare && Math.random() < 0.1) t.rare = 1;
+  return t;
+}
 
 // Enemy cats. rarity follows the Battle Cats tiers: N 기본, C 레어, R 슈퍼레어, E 울트라슈퍼레어.
 // area: hits every target in range. fly: drawn floating above the lane.
@@ -496,6 +581,8 @@ const ITF_ROUTE = ['japan', 'korea', 'china', 'mongolia', 'russia', 'norway', 'u
   'greenland', 'newyork', 'nasa', 'bermuda', 'brazil', 'floating', 'moon'];
 const CHAPTERS = {
   eoc:   { name: '세계편 1장', color: '#e0452b' },
+  eoc2:  { name: '세계편 2장', color: '#d0701a' },
+  eoc3:  { name: '세계편 3장', color: '#a0281a' },
   itf:   { name: '미래편 1장', color: '#7a3ad0' },
   itf2:  { name: '미래편 2장', color: '#2a50c0' },
   event: { name: '이벤트', color: '#36a426' },
@@ -509,7 +596,7 @@ const ENEMY_DEBUT = [
   ['pirate', 25, 2], ['ghost', 36, 1.5], ['jurassic', 40, 1], ['ufo', 40, 1],
 ];
 function enemyPool(ch, num) {
-  const at = ch === 'eoc' ? num : 99;
+  const at = ch === 'eoc' ? num : 99;  // later chapters use the whole lineup
   const pool = ENEMY_DEBUT.filter(e => at >= e[1]).map(([t, , w]) => [t, w]);
   if (ch === 'itf') pool.push(['valkyrie', num / 100]);
   if (ch === 'itf' && num >= 36) pool.push(['bahamut', 0.2]);
@@ -520,6 +607,8 @@ function enemyPool(ch, num) {
 // [boss type, strength multiplier]
 function bossFor(ch, num) {
   if (ch === 'eoc') return num === 48 ? ['valkyrie', 1.0] : num >= 32 ? ['jurassic', 2] : num >= 16 ? ['titan', 1.5] : ['bigCat', 2.5];
+  if (ch === 'eoc2') return num === 48 ? ['valkyrie', 1.4] : num >= 32 ? ['jurassic', 2.5] : num >= 16 ? ['titan', 2] : ['sumo', 2];
+  if (ch === 'eoc3') return num === 48 ? ['bahamut', 1.1] : num >= 32 ? ['valkyrie', 1.2] : num >= 16 ? ['jurassic', 2.5] : ['titan', 2];
   if (ch === 'itf2') return num === 48 ? ['bahamut', 1.6] : num >= 24 ? ['mecha', 3] : ['valkyrie', 1.4];
   return num === 48 ? ['bahamut', 1.0] : num >= 24 ? ['valkyrie', 1.1] : ['titan', 1.5];
 }
@@ -532,6 +621,17 @@ function chapterParams(ch, i) {
     towerHp: Math.round(800 + 1400 * t), spawnStart: 5 - 2.4 * t, spawnMin: 2.5 - 1.6 * t,
     enemyMult: 0.9 + 1.4 * Math.pow(t, 0.9), bossAt: 0.4 + 0.3 * t,
     rewardFirst: 100 + 10 * i, rewardReplay: 30 + 3 * i,
+  };
+  // 세계편 2장 / 3장: the same route again, with every enemy from the start
+  if (ch === 'eoc2') return {
+    towerHp: Math.round(1500 + 1200 * t), spawnStart: 4 - 1.8 * t, spawnMin: 2 - 1.2 * t,
+    enemyMult: 1.4 + 1.2 * t, bossAt: 0.45 + 0.3 * t,
+    rewardFirst: 300 + 12 * i, rewardReplay: 80 + 4 * i,
+  };
+  if (ch === 'eoc3') return {
+    towerHp: Math.round(1800 + 1300 * t), spawnStart: 3.6 - 1.6 * t, spawnMin: 1.8 - 1.1 * t,
+    enemyMult: 1.7 + 1.3 * t, bossAt: 0.5 + 0.3 * t,
+    rewardFirst: 450 + 14 * i, rewardReplay: 110 + 4 * i,
   };
   // 미래편 2장: tougher aliens with mecha cats and more bahamuts
   if (ch === 'itf2') return {
@@ -579,23 +679,28 @@ const EVENTS = [
 ];
 
 const STAGES = [];
-for (const [ch, route] of [['eoc', EOC_ROUTE], ['itf', ITF_ROUTE], ['itf2', ITF_ROUTE]]) {
+// Beating each 세계편 chapter's moon hands out a special unit.
+const REWARD_UNITS = { eoc: 'face', eoc2: 'yaongma', eoc3: 'dragon' };
+for (const [ch, route] of [['eoc', EOC_ROUTE], ['eoc2', EOC_ROUTE], ['eoc3', EOC_ROUTE], ['itf', ITF_ROUTE], ['itf2', ITF_ROUTE]]) {
   route.forEach((place, i) => {
     const [name, flag] = PLACES[place];
     const [bossType, bossMult] = bossFor(ch, i + 1);
     const s = { id: `${ch}-${i}`, chapter: ch, num: i + 1, name, flag, scene: place, startMoney: 250,
       pool: enemyPool(ch, i + 1), bossType, bossMult, ...chapterParams(ch, i) };
     if (place === 'moon') s.startBoss = true;
+    if (place === 'moon' && REWARD_UNITS[ch]) s.rewardUnit = REWARD_UNITS[ch];
     STAGES.push(s);
   });
 }
 for (const ev of EVENTS) STAGES.push({ ...ev, id: 'ev-' + ev.id, evId: ev.id, chapter: 'event', startMoney: 250 });
-const CHAPTER_LEN = { eoc: EOC_ROUTE.length, itf: ITF_ROUTE.length, itf2: ITF_ROUTE.length };
+const CHAPTER_LEN = { eoc: EOC_ROUTE.length, eoc2: EOC_ROUTE.length, eoc3: EOC_ROUTE.length, itf: ITF_ROUTE.length, itf2: ITF_ROUTE.length };
 // Story chapters in play order; each one opens when the previous is fully cleared.
-const STORY = ['eoc', 'itf', 'itf2'];
+// A chapter you've already started stays open (saves from before 세계편 2·3장 existed).
+const STORY = ['eoc', 'eoc2', 'eoc3', 'itf', 'itf2'];
 function chapterLocked(ch) {
   const i = STORY.indexOf(ch);
-  return i > 0 && save.progress[STORY[i - 1]] < CHAPTER_LEN[STORY[i - 1]];
+  if (i <= 0 || save.progress[ch] > 0) return false;
+  return save.progress[STORY[i - 1]] < CHAPTER_LEN[STORY[i - 1]];
 }
 
 function isUnlocked(s) {
@@ -623,7 +728,7 @@ const SAVE_KEY = 'dogSquad.save';
 // Unit ids from the all-dogs version, mapped to their replacements of the same rarity.
 const OLD_IDS = { pug: 'doggo', bulldog: 'hippo', sniper: 'snake', chihuahua: 'pig', corgi: 'sheep', shiba: 'squirrel', husky: 'kangaroo', shepherd: 'gorilla', jindo: 'rhino' };
 function defaultSave() {
-  return { bones: 500, progress: { eoc: 0, itf: 0, itf2: 0 }, events: {}, seen: {}, owned: { doggo: 1, snake: 1, hippo: 1 }, squad: ['doggo', 'snake', 'hippo'] };
+  return { bones: 500, tickets: { rare: 3, plat: 0 }, progress: { eoc: 0, eoc2: 0, eoc3: 0, itf: 0, itf2: 0 }, events: {}, seen: {}, owned: { doggo: 1, snake: 1, hippo: 1 }, squad: ['doggo', 'snake', 'hippo'] };
 }
 function loadSave() {
   const save = defaultSave();
@@ -632,10 +737,9 @@ function loadSave() {
     if (raw && typeof raw === 'object') {
       const fix = id => OLD_IDS[id] || id;
       if (Number.isFinite(raw.bones)) save.bones = raw.bones;
+      if (raw.tickets) for (const k in save.tickets) if (Number.isFinite(raw.tickets[k])) save.tickets[k] = raw.tickets[k];
       if (raw.progress) {
-        save.progress.eoc = Math.min(CHAPTER_LEN.eoc, raw.progress.eoc | 0);
-        save.progress.itf = Math.min(CHAPTER_LEN.itf, raw.progress.itf | 0);
-        save.progress.itf2 = Math.min(CHAPTER_LEN.itf2, raw.progress.itf2 | 0);
+        for (const ch in save.progress) save.progress[ch] = Math.min(CHAPTER_LEN[ch], raw.progress[ch] | 0);
       } else if (Number.isFinite(raw.cleared)) {
         save.progress.eoc = raw.cleared;  // from the 4-stage version
       }
@@ -653,10 +757,16 @@ function loadSave() {
   } catch (e) {}
   return save;
 }
+function grantUnit(id) {
+  if (save.owned[id]) return;
+  save.owned[id] = 1;
+  if (save.squad.length < MAX_SQUAD) save.squad.push(id);
+}
 function persist() {
   try { localStorage.setItem(SAVE_KEY, JSON.stringify(save)); } catch (e) {}
 }
 const save = loadSave();
+for (const ch in REWARD_UNITS) if (save.progress[ch] >= CHAPTER_LEN[ch]) grantUnit(REWARD_UNITS[ch]);
 
 function levelMult(id) { return 1 + 0.1 * ((save.owned[id] || 1) - 1); }
 
@@ -698,7 +808,7 @@ function eye(c, x, y, color) {
   c.beginPath(); c.ellipse(x, y, 1.7, 2.1, 0, 0, Math.PI * 2); c.fill();
 }
 
-function drawCritter(c, x, y, size, look, phase, facing, walking) {
+function drawCritter(c, x, y, size, look, phase, facing, walking, attacking) {
   c.save();
   c.translate(x, y);
   const k = size / 40;
@@ -712,9 +822,36 @@ function drawCritter(c, x, y, size, look, phase, facing, walking) {
     c.beginPath(); c.arc(0, -18, 38, 0, Math.PI * 2); c.fill();
   }
   if (look.kind === 'sprite' && !ready(IMAGES[look.img])) look = look.fallback;
-  const drawer = { sprite: drawSprite, snake: drawSnake, ape: drawApe, hopper: drawHopper, cyclone: drawCyclone, blobcat: drawBlobCat, fishcat: drawFishCat, jurassic: drawJurassic, ufo: drawUfo }[look.kind] || drawQuad;
-  drawer(c, look, phase, walking);
+  const drawer = { dragon: drawDragon, sprite: drawSprite, snake: drawSnake, ape: drawApe, hopper: drawHopper, cyclone: drawCyclone, blobcat: drawBlobCat, fishcat: drawFishCat, jurassic: drawJurassic, ufo: drawUfo }[look.kind] || drawQuad;
+  drawer(c, look, phase, walking, attacking);
   c.restore();
+}
+
+// Floating serpent dragon with wings; breathes fire when attacking.
+function drawDragon(c, look, phase, walking, attacking) {
+  const t = phase * 0.9;
+  const pts = [];
+  for (let i = 0; i <= 10; i++) pts.push([-30 + i * 4.6, -22 + Math.sin(t + i * 0.7) * 4 * (1 - i / 14)]);
+  const [hx0, hy0] = pts[10];
+  const hx = hx0 + 6, hy = hy0 - 8;
+  const flap = Math.sin(t * 1.6) * 7;
+  silhouette(c, look.wing, () => { c.moveTo(-6, -24); c.quadraticCurveTo(-18, -52 - flap, -2, -58 - flap); c.quadraticCurveTo(0, -44, 8, -26); c.closePath(); });
+  outlinedStroke(c, look.body, 11, () => { c.beginPath(); pts.forEach(([x, y], i) => i ? c.lineTo(x, y) : c.moveTo(x, y)); });
+  c.strokeStyle = look.belly; c.lineWidth = 3.5;
+  c.beginPath(); pts.forEach(([x, y], i) => i ? c.lineTo(x, y + 3) : c.moveTo(x, y + 3)); c.stroke();
+  for (let i = 1; i < 9; i += 2) silhouette(c, look.belly, () => { const [x, y] = pts[i]; c.moveTo(x - 3, y - 4); c.lineTo(x, y - 10); c.lineTo(x + 3, y - 4); c.closePath(); });
+  silhouette(c, look.wing, () => { c.moveTo(2, -24); c.quadraticCurveTo(-8, -56 + flap, 12, -60 + flap); c.quadraticCurveTo(12, -44, 16, -26); c.closePath(); });
+  for (const s of [-4, 2]) silhouette(c, '#f4efe0', () => { c.moveTo(hx + s, hy - 6); c.lineTo(hx + s - 7, hy - 17); c.lineTo(hx + s + 3, hy - 7); c.closePath(); });
+  silhouette(c, look.body, () => { ell(c, hx, hy, 9, 7.5); ell(c, hx + 9, hy + 2, 8, 4.5); });
+  eye(c, hx + 3, hy - 2.5, '#ffe25a');
+  c.strokeStyle = OUT; c.lineWidth = 1.4;
+  c.beginPath(); c.moveTo(hx + 6, hy + 4); c.lineTo(hx + 16, hy + 3.5); c.stroke();
+  if (attacking) {
+    const g = c.createLinearGradient(hx + 16, 0, hx + 60, 0);
+    g.addColorStop(0, 'rgba(255,240,120,0.95)'); g.addColorStop(1, 'rgba(255,90,30,0)');
+    c.fillStyle = g;
+    c.beginPath(); c.moveTo(hx + 16, hy + 3); c.lineTo(hx + 62, hy - 10); c.lineTo(hx + 62, hy + 22); c.closePath(); c.fill();
+  }
 }
 
 // Four-legged animals (and the cats).
@@ -843,9 +980,16 @@ function drawQuad(c, look, phase, walking) {
 }
 
 // One of your images, bobbing and squashing as it walks.
-function drawSprite(c, look, phase, walking) {
+function drawSprite(c, look, phase, walking, attacking) {
   const img = IMAGES[look.img];
   const h = look.height, w = h * img.naturalWidth / img.naturalHeight;
+  const atk = IMAGES[look.attackImg];
+  if (attacking && ready(atk)) {
+    // attack picture reaches forward: keep its back edge where the normal picture's is
+    const ah = h * look.attackHeight, aw = ah * atk.naturalWidth / atk.naturalHeight;
+    c.drawImage(atk, -w / 2, -ah, aw, ah);
+    return;
+  }
   const hop = walking ? Math.abs(Math.sin(phase)) * 3 : 0;
   const squash = 1 + (walking ? Math.sin(phase * 2) : Math.sin(phase)) * 0.04;
   c.save();
@@ -1140,7 +1284,12 @@ function showScreen(name) {
   renderBones();
 }
 
-function renderBones() { $('bones').textContent = '🦴 ' + save.bones; }
+function renderBones() {
+  $('bones').innerHTML = `🦴 ${save.bones}<span class="tk">${ticketSvg('rare')}${save.tickets.rare}</span><span class="tk">${ticketSvg('plat')}${save.tickets.plat}</span>`;
+  const n = save.tickets.rare + save.tickets.plat;
+  $('gachaBadge').textContent = n;
+  $('gachaBadge').classList.toggle('show', n > 0);
+}
 
 function nextStage() {
   const ch = STORY.find(c => save.progress[c] < CHAPTER_LEN[c]);
@@ -1169,8 +1318,7 @@ function renderStageSelect() {
   const list = STAGES.filter(s => s.chapter === mapTab);
   const info = $('chapterInfo');
   if (mapTab === 'event') info.textContent = '세계편을 진행하면 새 이벤트가 열려요. 몇 번이든 도전 가능!';
-  else if (mapTab === 'itf' && chapterLocked('itf')) info.textContent = '세계편 1장의 달을 클리어하면 열려요 (외계 냥코 등장!)';
-  else if (mapTab === 'itf2' && chapterLocked('itf2')) info.textContent = '미래편 1장의 달을 클리어하면 열려요 (메카냥코 군단 등장!)';
+  else if (chapterLocked(mapTab)) info.textContent = `${CHAPTERS[STORY[STORY.indexOf(mapTab) - 1]].name}의 달을 클리어하면 열려요` + ({ itf: ' (외계 냥코 등장!)', itf2: ' (메카냥코 군단 등장!)' }[mapTab] || '');
   else info.textContent = `${CHAPTERS[mapTab].name} — ${save.progress[mapTab]}/${list.length} 클리어`;
 
   const grid = $('stageGrid');
@@ -1192,7 +1340,7 @@ function renderStageSelect() {
       <span class="flag">${s.flag}</span>
       <span class="name">${s.name}</span>
       ${label ? `<span class="desc">${label}</span>` : ''}
-      <span class="rw">🦴 ${cleared ? s.rewardReplay : s.rewardFirst}</span>`;
+      <span class="rw">🦴 ${cleared ? s.rewardReplay : s.rewardFirst}${s.rewardUnit && !save.owned[s.rewardUnit] ? ' 🎁' : ''}</span>`;
     tile.onclick = () => startStage(STAGES.indexOf(s));
     grid.appendChild(tile);
     if (s === next) nextEl = tile;
@@ -1226,7 +1374,7 @@ function unitCardHtml(id, badge, extraClass, withLevelUp) {
       ${badge || ''}
       <img src="${portrait(id)}" alt="${locked ? '???' : def.name}">
       <div class="nm">${locked ? '???' : def.name}</div>
-      <div class="st">${locked ? '뽑기에서 획득 가능' : `체력 ${Math.round(def.hp * m)} · 공격 ${Math.round(def.atk * m)}<br>${def.cost}${CURRENCY} · ${def.range > 50 ? '원거리' : '근거리'}${def.area ? '·범위' : ''} · 쿨 ${def.cd}초`}</div>
+      <div class="st">${locked ? (def.unlock || '뽑기에서 획득 가능') : `체력 ${Math.round(def.hp * m)} · 공격 ${Math.round(def.atk * m)}<br>${def.cost}${CURRENCY} · ${def.range > 50 ? '원거리' : '근거리'}${def.area ? '·범위' : ''} · 쿨 ${def.cd}초`}</div>
       ${withLevelUp ? levelUpButtonHtml(id) : ''}
     </div>`;
 }
@@ -1270,15 +1418,57 @@ function toggleSquad(id) {
 }
 
 // ---- Gacha ----
+// Capsule machine: a dog head sitting on a glass dome of capsules, with a crank.
+function machineSvg(kind) {
+  const plat = kind === 'plat';
+  const body = plat ? '#9ab8d8' : '#e0452b', trim = plat ? '#dff0ff' : '#ffd54a';
+  const caps = plat ? ['#e59aff', '#ff8a8a', '#dff0ff', '#b040e0', '#ffd54a', '#e59aff', '#dff0ff']
+                    : ['#3aa0ff', '#ffae00', '#b040e0', '#3aa0ff', '#ff5a5a', '#ffae00', '#3aa0ff'];
+  const spots = [[72, 118], [100, 124], [128, 118], [84, 98], [116, 98], [100, 76], [66, 92]];
+  return `
+    <defs><clipPath id="dome${kind}"><circle cx="100" cy="100" r="54"/></clipPath></defs>
+    <rect x="34" y="138" width="132" height="92" rx="16" fill="${body}" stroke="#111" stroke-width="5"/>
+    <rect x="34" y="138" width="132" height="16" rx="8" fill="${trim}" stroke="#111" stroke-width="4"/>
+    <rect x="78" y="196" width="44" height="26" rx="8" fill="#2a1a10" stroke="#111" stroke-width="4"/>
+    <g fill="rgba(255,255,255,0.55)"><ellipse cx="58" cy="206" rx="7" ry="6"/><circle cx="51" cy="197" r="3"/><circle cx="58" cy="194" r="3"/><circle cx="65" cy="197" r="3"/></g>
+    <g class="crank"><circle cx="142" cy="178" r="15" fill="${trim}" stroke="#111" stroke-width="4"/><rect x="138" y="160" width="8" height="36" rx="4" fill="#fff" stroke="#111" stroke-width="3"/></g>
+    <circle cx="100" cy="100" r="54" fill="rgba(210,240,255,0.75)" stroke="#111" stroke-width="5"/>
+    <g clip-path="url(#dome${kind})"><g class="domeCaps">
+      ${spots.map(([x, y], i) => `<g transform="translate(${x} ${y}) rotate(${i * 47})"><path d="M-12 0a12 12 0 0 1 24 0z" fill="${caps[i]}" stroke="#111" stroke-width="3"/><path d="M-12 0a12 12 0 0 0 24 0z" fill="#fff" stroke="#111" stroke-width="3"/></g>`).join('')}
+    </g></g>
+    <path d="M70 70a40 40 0 0 1 22-16" stroke="#fff" stroke-width="6" stroke-linecap="round" fill="none" opacity="0.8"/>
+    <g class="head">
+      <ellipse cx="67" cy="40" rx="11" ry="21" transform="rotate(24 67 40)" fill="#8a5a32" stroke="#111" stroke-width="4"/>
+      <ellipse cx="133" cy="40" rx="11" ry="21" transform="rotate(-24 133 40)" fill="#8a5a32" stroke="#111" stroke-width="4"/>
+      <ellipse cx="100" cy="30" rx="31" ry="26" fill="#f6e7c8" stroke="#111" stroke-width="5"/>
+      <ellipse cx="100" cy="42" rx="15" ry="11" fill="#fff" stroke="#111" stroke-width="3"/>
+      <ellipse cx="89" cy="25" rx="3.5" ry="4.5" fill="#111"/><ellipse cx="111" cy="25" rx="3.5" ry="4.5" fill="#111"/>
+      <ellipse cx="100" cy="37" rx="6" ry="4.5" fill="#111"/>
+      <path d="M100 41v4m-6 1q6 5 12 0" stroke="#111" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+      ${plat ? '<path d="M84 8l5-12 6 8 5-11 5 11 6-8 5 12z" fill="#dff0ff" stroke="#111" stroke-width="3" stroke-linejoin="round"/>' : ''}
+    </g>`;
+}
+$('rareMachine').innerHTML = machineSvg('rare');
+$('platMachine').innerHTML = machineSvg('plat');
+
+let cranking = false;
 function renderGacha() {
-  $('gachaRates').innerHTML = RARITY_RATES.map(([r, pct]) => `<span class="r${r}">${RARITY_NAMES[r]} ${pct}%</span>`).join('');
-  $('pull1').disabled = save.bones < PULL_COST;
-  $('pull10').disabled = save.bones < PULL10_COST;
+  const rates = list => list.map(([r, pct]) => `<span class="r${r}">${RARITY_NAMES[r]} ${pct}%</span>`).join('');
+  $('gachaRates').innerHTML = rates(RARITY_RATES);
+  $('platRates').innerHTML = rates(PLAT_RATES);
+  $('pull1').disabled = cranking || save.bones < PULL_COST;
+  $('pull10').disabled = cranking || save.bones < PULL10_COST;
+  $('pullT1').disabled = cranking || save.tickets.rare < 1;
+  $('pullT1Sub').innerHTML = `<span class="tk" style="margin:0">${ticketSvg('rare')}${save.tickets.rare}장</span>`;
+  $('pullT10').style.display = save.tickets.rare >= 10 ? '' : 'none';
+  $('pullT10').disabled = cranking;
+  $('pullPlat').disabled = cranking || save.tickets.plat < 1;
+  $('pullPlatSub').innerHTML = `<span class="tk" style="margin:0">${ticketSvg('plat')}${save.tickets.plat}장</span>`;
 }
 
-function rollRarity() {
+function rollRarity(table = RARITY_RATES) {
   let roll = Math.random() * 100;
-  for (const [r, pct] of RARITY_RATES) {
+  for (const [r, pct] of table) {
     if (roll < pct) return r;
     roll -= pct;
   }
@@ -1286,14 +1476,17 @@ function rollRarity() {
 }
 
 function rollUnit(rarity) {
-  const pool = Object.keys(UNIT_TYPES).filter(id => !UNIT_TYPES[id].starter && UNIT_TYPES[id].rarity === rarity);
+  const pool = Object.keys(UNIT_TYPES).filter(id => !UNIT_TYPES[id].starter && !UNIT_TYPES[id].unlock && UNIT_TYPES[id].rarity === rarity);
   return pool[Math.floor(Math.random() * pool.length)];
 }
 
-function pull(count, cost) {
-  if (save.bones < cost) return;
-  save.bones -= cost;
-  const rarities = Array.from({ length: count }, rollRarity);
+// pay: 'bones', 'rare' or 'plat' (tickets).
+function pull(count, cost, pay = 'bones') {
+  const wallet = pay === 'bones' ? save.bones : save.tickets[pay];
+  if (cranking || wallet < cost) return;
+  if (pay === 'bones') save.bones -= cost; else save.tickets[pay] -= cost;
+  const table = pay === 'plat' ? PLAT_RATES : RARITY_RATES;
+  const rarities = Array.from({ length: count }, () => rollRarity(table));
   if (count === 10 && rarities.every(r => r === 'C')) rarities[9] = 'R';
 
   const results = rarities.map(r => {
@@ -1313,13 +1506,25 @@ function pull(count, cost) {
     return { id, html: unitCardHtml(id, badge) };
   });
   persist();
-  renderGacha();
   renderBones();
   $('gachaResults').innerHTML = '';
-  startReveal(results);
+  // turn the crank, then the capsule drops
+  const machine = $(pay === 'plat' ? 'platMachine' : 'rareMachine');
+  cranking = true;
+  machine.classList.add('cranking');
+  renderGacha();
+  setTimeout(() => {
+    cranking = false;
+    machine.classList.remove('cranking');
+    renderGacha();
+    startReveal(results);
+  }, 800);
 }
 $('pull1').onclick = () => pull(1, PULL_COST);
 $('pull10').onclick = () => pull(10, PULL10_COST);
+$('pullT1').onclick = () => pull(1, 1, 'rare');
+$('pullT10').onclick = () => pull(10, 10, 'rare');
+$('pullPlat').onclick = () => pull(1, 1, 'plat');
 
 // Capsule reveal: drop → shake → open, tap to advance.
 const overlayEl = $('capsuleOverlay');
@@ -1676,6 +1881,10 @@ function endGame(playerWon) {
     else save.progress[stage.chapter] = stage.num;
   }
   const reward = battleReward(stage, playerWon, firstClear);
+  const newUnit = playerWon && stage.rewardUnit && !save.owned[stage.rewardUnit] ? stage.rewardUnit : null;
+  if (newUnit) grantUnit(newUnit);
+  const tickets = ticketReward(stage, playerWon, firstClear);
+  for (const k in tickets) save.tickets[k] += tickets[k];
   save.bones += reward;
   persist();
   renderBones();
@@ -1687,7 +1896,7 @@ function endGame(playerWon) {
   showBanner(
     title,
     playerWon ? '#ffe25a' : '#ff5a3c',
-    `+${reward} 🦴${firstClear ? '  첫 클리어 보너스!' : ''}${opened ? `\n${CHAPTERS[opened].name} 개방!` : ''}`,
+    `+${reward} 🦴${firstClear ? '  첫 클리어 보너스!' : ''}${opened ? `\n${CHAPTERS[opened].name} 개방!` : ''}${newUnit ? `\n🎁 ${UNIT_TYPES[newUnit].name} 획득!` : ''}${Object.keys(tickets).filter(k => tickets[k]).map(k => `\n🎫 ${TICKET_NAMES[k]} +${tickets[k]}`).join('')}`,
     { retry: true, next: playerWon && stageAfter(stageIndex) >= 0 },
   );
 }
@@ -2378,7 +2587,8 @@ function drawUnit(u) {
     ctx.fillStyle = g;
     ctx.beginPath(); ctx.arc(x, y - drawSize * 0.45, drawSize * 0.75, 0, Math.PI * 2); ctx.fill();
   }
-  drawCritter(ctx, x, y, drawSize, u.look, u.anim, facing, u.state === 'walk' && u.kbT <= 0);
+  const attacking = u.kbT <= 0 && u.state === 'attack' && u.atkTimer > u.atkCooldown - 0.6;
+  drawCritter(ctx, x, y, drawSize, u.look, u.anim, facing, u.state === 'walk' && u.kbT <= 0, attacking);
   if (u.rarity && u.rarity !== 'N') outlinedText(ctx, RARITY_NAMES[u.rarity], x, y - drawSize * 1.1 - 6, 13, RARITY_COLORS[u.rarity]);
 }
 
