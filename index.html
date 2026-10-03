@@ -192,29 +192,94 @@
     #powerMain { flex-direction: column; } #powerCard { width: auto; }
   }
 
-  /* ---- Gacha ---- */
-  #gachaMachine { width: 100%; max-width: 560px; padding: 18px; display: flex; flex-direction: column; align-items: center; gap: 12px; }
-  #gachaMachine .gTitle { font-size: 32px; color: #fff; text-shadow: var(--ol); }
-  .machineRow { width: 100%; display: flex; gap: 18px; align-items: center; justify-content: center; flex-wrap: wrap; }
-  @keyframes jiggle { 0%, 100% { transform: rotate(0); } 33% { transform: rotate(-5deg); } 66% { transform: rotate(5deg); } }
+  /* ---- Gacha (레어 뽑기 screen, laid out like the Battle Cats capsule screen) ---- */
   @keyframes wobble { 0%, 100% { transform: rotate(-4deg); } 50% { transform: rotate(4deg); } }
-  .machineLabel { font-size: 22px; color: #fff; text-shadow: var(--ol); text-align: center; }
-  #platBox { width: 100%; border-top: 3px dashed #c9b48a; padding-top: 14px; display: flex; flex-direction: column; align-items: center; gap: 10px; }
-  #platBox .gTitle { font-size: 26px; color: #dff0ff; text-shadow: var(--ol); }
-  .bcBtn.plat { background: linear-gradient(#f4fbff, #9ab8d8); }
+  body.onGacha #topBar { display: none; }
+  #gacha { max-width: 980px; padding-top: 4px; }
+  #gachaWrap {
+    position: relative; width: 100%; border: 4px solid #111; border-radius: 16px; box-shadow: 0 6px 0 #111; overflow: hidden;
+    background: radial-gradient(circle at 20% 15%, rgba(255,255,255,0.08) 0 2px, transparent 3px) 0 0 / 26px 26px,
+                linear-gradient(#6a3aa0, #4a2478 55%, #3a1a60);
+  }
+  #gHead { display: flex; align-items: stretch; justify-content: space-between; background: rgba(10,0,25,0.55); border-bottom: 3px solid #111; }
+  #gTitleTab { font-size: 26px; padding: 4px 26px 4px 16px; background: linear-gradient(#5a5a6a, #2a2a36); text-shadow: var(--ol);
+    clip-path: polygon(0 0, 100% 0, calc(100% - 16px) 100%, 0 100%); }
+  #gWallet { display: flex; align-items: center; gap: 8px; padding: 4px 12px; font-size: 22px; text-shadow: var(--ol); }
+  #gWallet .lbl { font-size: 14px; color: #ffe25a; background: #111; border-radius: 6px; padding: 0 6px; text-shadow: none; }
+  #gTimer { text-align: right; padding: 6px 70px 0; font-size: 14px; color: #e8dcff; text-shadow: var(--ol-thin); }
+  #gTimer b { font-weight: normal; color: #fff; margin-left: 6px; }
+
+  #gStage { position: relative; display: flex; align-items: center; gap: 6px; padding: 4px 8px 0; }
+  .gArrow { flex: 0 0 52px; height: 92px; border: 0; background: none; padding: 0; cursor: pointer; filter: drop-shadow(0 4px 0 #111); }
+  .gArrow svg { width: 100%; height: 100%; }
+  .gArrow:active { transform: translateY(3px); filter: none; }
+  #gBannerFrame { flex: 1; min-width: 0; padding: 7px; border-radius: 14px; background: linear-gradient(#b68ae0, #7a4ab0); border: 3px solid #111; }
+  #gBanner {
+    position: relative; aspect-ratio: 2.55 / 1; border-radius: 9px; overflow: hidden; border: 3px solid #111;
+    background: repeating-conic-gradient(from 0deg at 50% 70%, rgba(255,255,255,0.35) 0deg 7deg, transparent 7deg 14deg), var(--bb);
+    --bb: radial-gradient(ellipse at 50% 65%, #fffbe0, #ffd6ec 45%, #c890e8);
+  }
+  #gBanner.plat { --bb: radial-gradient(ellipse at 50% 65%, #ffffff, #d6ecff 45%, #7aa0d0); }
+  #gBanner.cranking { animation: bannerShake 0.2s ease-in-out 4; }
+  @keyframes bannerShake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-6px) rotate(-0.6deg); } 75% { transform: translateX(6px) rotate(0.6deg); } }
+  #gArt img { position: absolute; bottom: 0; transform: translateX(-50%); object-fit: contain; filter: drop-shadow(0 3px 2px rgba(0,0,0,0.35)); }
+  #gLogo { position: absolute; left: 50%; bottom: 7%; transform: translateX(-50%) rotate(-3deg); z-index: 20; text-align: center; white-space: nowrap; line-height: 1; }
+  #gLogo small { display: inline-block; font-size: clamp(11px, 1.7vw, 15px); background: #e0331a; padding: 2px 10px; border: 2px solid #111; border-radius: 10px; text-shadow: var(--ol-thin); }
+  #gLogo b { display: block; font-weight: normal; font-size: clamp(28px, 6.4vw, 58px); color: #ffe25a; text-shadow: var(--ol), 0 0 18px rgba(255,90,160,0.9); letter-spacing: 1px; }
+  #gBanner.plat #gLogo b { color: #eaf6ff; text-shadow: var(--ol), 0 0 18px rgba(90,170,255,0.9); }
+  #gLogo span { display: inline-block; font-size: clamp(11px, 1.6vw, 15px); color: #fff; background: rgba(20,0,40,0.75); padding: 2px 10px; border-radius: 8px; }
+  #gNew { position: absolute; left: calc(50% - clamp(70px, 14vw, 140px)); bottom: 46%; z-index: 21; font-family: 'Lilita One', sans-serif; font-size: clamp(14px, 2.4vw, 22px);
+    color: #fff; background: #ff3a3a; border: 3px solid #111; border-radius: 50%; padding: 6px 7px; transform: rotate(-14deg); text-shadow: var(--ol-thin); }
+  #gDots { display: flex; justify-content: center; gap: 8px; padding: 6px 0 2px; }
+  #gDots i { width: 11px; height: 11px; border-radius: 50%; background: #3a1a60; border: 2px solid #111; cursor: pointer; }
+  #gDots i.on { background: #ffe25a; }
+
+  #gTicker { margin: 4px 70px 0; overflow: hidden; white-space: nowrap; font-size: 15px; color: #fff; background: rgba(10,0,25,0.6); border: 2px solid #111; border-radius: 8px; padding: 3px 0; }
+  #gTicker span { display: inline-block; padding-left: 100%; animation: ticker 22s linear -7s infinite; text-shadow: var(--ol-thin); }
+  @keyframes ticker { to { transform: translateX(-100%); } }
+  #gRates { display: flex; gap: 6px; justify-content: center; flex-wrap: wrap; padding: 8px 8px 0; }
+  #gRates span { background: var(--r); color: #fff; text-shadow: var(--ol-thin); font-size: 13px; padding: 2px 8px; border: 2px solid #111; border-radius: 9px; }
+
+  #gBottom { display: flex; align-items: flex-end; gap: 10px; padding: 10px 12px 12px; }
+  #gBack { flex: 0 0 auto; width: 64px; height: 64px; border-radius: 50%; border: 4px solid #111; cursor: pointer; font-size: 34px; line-height: 1; color: #fff; text-shadow: var(--ol);
+    background: radial-gradient(circle at 40% 30%, #fff3a0, #ffc400 55%, #e09000); box-shadow: 0 4px 0 #111; }
+  #gBack:active { transform: translateY(3px); box-shadow: 0 1px 0 #111; }
+  #gStorage { flex: 0 0 auto; width: 72px; padding: 4px 0 3px; cursor: pointer; border: 3px solid #111; border-radius: 10px; background: linear-gradient(#ffffff, #d8d4e4);
+    box-shadow: 0 4px 0 #111; font-size: 15px; color: #fff; text-shadow: var(--ol-thin); }
+  #gStorage .ico { display: block; font-size: 30px; line-height: 1.1; text-shadow: none; }
+  #gStorage:active { transform: translateY(3px); box-shadow: 0 1px 0 #111; }
+  #gPulls { flex: 1; display: flex; gap: 12px; justify-content: flex-end; flex-wrap: wrap; }
+  .gPull { position: relative; display: flex; align-items: center; gap: 8px; min-width: 230px; padding: 8px 8px 8px 14px; cursor: pointer;
+    border: 4px solid #111; border-radius: 14px; color: #fff; text-shadow: var(--ol);
+    box-shadow: inset 0 -5px 0 rgba(0,0,0,0.18), inset 0 4px 0 rgba(255,255,255,0.45), 0 5px 0 #111; }
+  .gPull.one { background: linear-gradient(#ff7a5a, #d8261a); }
+  .gPull.ten { background: linear-gradient(#ffc04a, #f07a00); }
+  .gPull b { flex: 1; font-weight: normal; font-size: 26px; text-align: left; white-space: nowrap; }
+  .gPull b em { font-style: normal; font-size: 34px; color: #ffe25a; }
+  .gPull .cost { display: flex; align-items: center; justify-content: flex-end; gap: 4px; min-width: 92px; padding: 3px 8px; border: 3px solid #111; border-radius: 9px;
+    background: linear-gradient(#fffbe8, #f0e2b8); color: #fff; font-size: 22px; text-shadow: var(--ol); }
+  .gPull .cost svg { width: 34px; height: 22px; }
+  .gPull .guar { position: absolute; top: -15px; right: 10px; font-size: 13px; padding: 1px 8px; background: #b040e0; border: 2px solid #111; border-radius: 8px; text-shadow: var(--ol-thin); }
+  .gPull:active:not(:disabled) { transform: translateY(4px); box-shadow: inset 0 -5px 0 rgba(0,0,0,0.18), 0 1px 0 #111; }
+  .gPull:disabled { filter: grayscale(1) brightness(0.75); cursor: not-allowed; }
+  .gPull.hide { display: none; }
+  #gFoot { display: flex; justify-content: flex-end; gap: 10px; padding: 7px 12px; background: rgba(10,0,25,0.6); border-top: 3px solid #111; font-size: 20px; text-shadow: var(--ol); }
+  #gFoot .tk { margin: 0; background: rgba(255,255,255,0.12); border: 2px solid #111; border-radius: 9px; padding: 1px 10px 1px 6px; }
+  #gFoot .bn { background: rgba(255,255,255,0.12); border: 2px solid #111; border-radius: 9px; padding: 1px 10px; }
+  @media (max-width: 720px) {
+    #gTitleTab { font-size: 20px; } #gWallet { font-size: 18px; }
+    #gTimer { padding: 4px 12px 0; } #gTicker { margin: 4px 10px 0; }
+    .gArrow { flex-basis: 30px; height: 60px; } #gStage { padding: 4px 4px 0; gap: 3px; } #gBannerFrame { padding: 4px; }
+    #gBottom { flex-wrap: wrap; } #gPulls { flex-basis: 100%; order: -1; }
+    .gPull { min-width: 0; flex: 1 1 200px; } .gPull b { font-size: 21px; } .gPull b em { font-size: 27px; } .gPull .cost { min-width: 0; font-size: 19px; }
+    #gBack { width: 54px; height: 54px; font-size: 28px; }
+  }
   /* tickets */
   .tk { display: inline-flex; align-items: center; gap: 4px; margin-left: 10px; vertical-align: middle; }
   .tk svg { width: 34px; height: 22px; }
   #gachaBadge { position: absolute; top: -10px; right: -10px; min-width: 30px; height: 30px; padding: 0 7px; border-radius: 15px;
     background: #ff3a3a; border: 3px solid #111; font-size: 16px; line-height: 24px; text-shadow: var(--ol-thin); display: none; }
   #gachaBadge.show { display: block; }
-  #gachaRates, #platRates { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
-  #platRates { flex-direction: column; }
-  #gachaRates span, #platRates span { background: var(--r); color: #fff; text-shadow: var(--ol-thin); font-size: 14px; padding: 3px 9px; border: 2px solid #111; border-radius: 10px; }
-  #gachaButtons { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; }
-  #gachaButtons .bcBtn { font-size: 24px; line-height: 1.1; }
-  #gachaButtons .bcBtn small { display: block; font-size: 15px; }
-  #gachaNote, .platNote { font-size: 14px; color: #7a6040; text-align: center; line-height: 1.5; }
   #gachaResults { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin-top: 20px; max-width: 760px; }
 
   /* gold 멍뭉이 capsule (assets/capsule_dog.png, from the 멍뭉이 picture). It splits in two
@@ -225,12 +290,6 @@
   .capTop { clip-path: inset(0 0 37.5% 0); }  /* overlaps the bottom half a hair so no seam shows */
   .capBot { clip-path: inset(62% 0 0 0); }
   .capsule.plat .capTop, .capsule.plat .capBot { filter: grayscale(1) brightness(1.35) contrast(1.05); }
-  .capStageBox { width: 100%; display: flex; justify-content: center; padding: 56px 0 22px; border: 4px solid #111; border-radius: 14px;
-    background: radial-gradient(ellipse at 50% 40%, #9a4ec0, #5a2a80 60%, #3a1a5a); }
-  .capStageBox.plat { background: radial-gradient(ellipse at 50% 40%, #6aa0d0, #2a5080 60%, #1a2a50); padding: 44px 0 14px; width: auto; flex: 0 0 210px; }
-  .gachaCap { transform-origin: 50% 100%; animation: wobble 2.4s ease-in-out infinite; }
-  .gachaCap.small { zoom: 0.7; }
-  .gachaCap.cranking { animation: capShake 0.25s ease-in-out 3; }
   #capFlash { position: fixed; inset: 0; background: #fff; opacity: 0; pointer-events: none; z-index: 21; }
   #capStage.opened ~ #capFlash { animation: flash 0.5s ease-out; }
   @keyframes flash { from { opacity: 0.95; } to { opacity: 0; } }
@@ -395,33 +454,35 @@
 
   <!-- Gacha -->
   <div class="screen" id="gacha">
-    <div class="screenHead">
-      <button class="bcBtn small toLobby">◀ 뒤로</button>
-      <h2>레어 뽑기</h2>
-      <div class="spacer"></div>
-    </div>
-    <div class="panel" id="gachaMachine">
-      <div class="gTitle">레어 캡슐</div>
-      <div class="machineRow">
-        <div class="capStageBox"><div class="capsule gachaCap" id="rareMachine"></div></div>
+    <div id="gachaWrap">
+      <div id="gHead">
+        <div id="gTitleTab">레어 뽑기</div>
+        <div id="gWallet"><span class="lbl">뼈다귀</span><span id="gBones"></span></div>
       </div>
-      <div id="gachaRates"></div>
-      <div id="gachaButtons">
-        <button class="bcBtn" id="pull1">1회 뽑기<small>🦴 100</small></button>
-        <button class="bcBtn red" id="pull10">10연차<small>🦴 900</small></button>
-        <button class="bcBtn green" id="pullT1">티켓 1장<small id="pullT1Sub"></small></button>
-        <button class="bcBtn green" id="pullT10">티켓 10장<small>슈퍼레어 이상 확정</small></button>
-      </div>
-      <div id="gachaNote">10연차는 슈퍼레어 이상 1마리 확정!<br>레어 티켓은 스테이지 클리어로 획득 · 중복되면 레벨업</div>
-      <div id="platBox">
-        <div class="gTitle">플래티넘 캡슐</div>
-        <div class="machineRow">
-          <div class="capStageBox plat"><div class="capsule gachaCap small plat" id="platMachine" style="--cap: rgba(200,230,255,0.9)"></div></div>
-          <div id="platRates"></div>
+      <div id="gTimer">남은시간<b id="gTime"></b></div>
+      <div id="gStage">
+        <button class="gArrow" id="gPrev" aria-label="이전 캡슐"><svg viewBox="0 0 52 92"><path d="M46 6 L6 46 L46 86 Z" fill="#ffd21a" stroke="#111" stroke-width="5" stroke-linejoin="round"/><path d="M38 22 L18 44" stroke="#fff6b0" stroke-width="5" stroke-linecap="round"/></svg></button>
+        <div id="gBannerFrame">
+          <div id="gBanner">
+            <div id="gArt"></div>
+            <div id="gNew">NEW</div>
+            <div id="gLogo"><small id="gKicker"></small><b id="gName"></b><span id="gSub"></span></div>
+          </div>
         </div>
-        <button class="bcBtn plat" id="pullPlat">플래티넘 티켓 사용<small id="pullPlatSub"></small></button>
-        <div class="platNote">울트라슈퍼레어 이상 확정! 각 챕터 마지막 스테이지 첫 클리어 보상</div>
+        <button class="gArrow" id="gNext" aria-label="다음 캡슐"><svg viewBox="0 0 52 92"><path d="M6 6 L46 46 L6 86 Z" fill="#ffd21a" stroke="#111" stroke-width="5" stroke-linejoin="round"/><path d="M14 22 L34 44" stroke="#fff6b0" stroke-width="5" stroke-linecap="round"/></svg></button>
       </div>
+      <div id="gDots"></div>
+      <div id="gTicker"><span id="gTickerText"></span></div>
+      <div id="gRates"></div>
+      <div id="gBottom">
+        <button id="gBack" class="toLobby" aria-label="뒤로">↩</button>
+        <button id="gStorage"><span class="ico">📦</span>저장고</button>
+        <div id="gPulls">
+          <button class="gPull one" id="pull1"><b><em>1</em>회 뽑기!!</b><span class="cost" id="pull1Cost"></span></button>
+          <button class="gPull ten" id="pull10"><span class="guar">슈퍼레어 이상 확정!!</span><b><em>10</em>회 뽑기!!</b><span class="cost" id="pull10Cost"></span></button>
+        </div>
+      </div>
+      <div id="gFoot"></div>
     </div>
     <div id="gachaResults"></div>
   </div>
@@ -566,6 +627,10 @@ loadImage('dragon', 'assets/dragon_cut.png');
 loadImage('dragonAtk', 'assets/dragon_attack_cut.png');
 loadImage('elephant', 'assets/elephant_cut.png');
 loadImage('elephantAtk', 'assets/elephant_attack_cut.png');
+loadImage('bear', 'assets/bear_cut.png');
+loadImage('bearAtk', 'assets/bear_attack_cut.png');
+loadImage('blackBear', 'assets/blackbear_cut.png');
+loadImage('blackBearAtk', 'assets/blackbear_attack_cut.png');
 function ready(img) { return img && img.complete && img.naturalWidth > 0; }
 
 const CANNON_MAX = 100;
@@ -594,6 +659,7 @@ const UNIT_TYPES = {
   yaongma:  { name: '악의 제왕 야옹마',   rarity: 'X', unlock: '세계편 2장 달 클리어 보상', cost: 300, cd: 14, hp: 1000, atk: 70, range: 120, speed: 20, atkCooldown: 1.6, size: 64, kb: 4, area: true },
   dragon:   { name: '맴매 선생', rarity: 'X', unlock: '세계편 3장 달 클리어 보상', cost: 400, cd: 20, hp: 1800, atk: 110, range: 50, speed: 28, atkCooldown: 1.8, size: 76, kb: 4, area: true, fly: 24 },
   elephant: { name: '빠옹',   rarity: 'L', cost: 280, cd: 14,  hp: 1100, atk: 40, range: 45, speed: 26, atkCooldown: 1.4, size: 40, kb: 3 },
+  blackBear: { name: '블랙 쿠마', rarity: 'L', cost: 100, cd: 5, hp: 60, atk: 999, range: 100, speed: 200, atkCooldown: 0.15, size: 40, kb: 3, area: true },  // fragile: the strongest cats kill it in 1-2 hits
 };
 const UNIT_LOOKS = {
   doggo:    { kind: 'sprite', img: 'doge', src: 'assets/dog_cut.png', height: 36, fallback: { body: '#ffffff', ear: 'pointy', tail: 'curl' } },
@@ -606,7 +672,10 @@ const UNIT_LOOKS = {
   gorilla:  { kind: 'ape', body: '#3c3c44', face: '#b0a098' },
   rhino:    { kind: 'quad', body: '#a8adb5', wide: true, headR: 12, ear: 'pointy', horn: true, tail: 'stub', legs: 0.8, crown: true, aura: true },
   cobra:    { kind: 'snake', body: '#7ab84a' },
-  bear:     { kind: 'quad', body: '#8a5a32', wide: true, headR: 13, ear: 'nub', tail: 'stub', legs: 0.8 },
+  bear:     { kind: 'sprite', img: 'bear', attackImg: 'bearAtk', attackHeight: 1.0, src: 'assets/bear_cut.png', height: 66,
+              fallback: { kind: 'quad', body: '#8a5a32', wide: true, headR: 13, ear: 'nub', tail: 'stub', legs: 0.8 } },
+  blackBear: { kind: 'sprite', img: 'blackBear', attackImg: 'blackBearAtk', attackHeight: 1.0, src: 'assets/blackbear_cut.png', height: 72,
+              fallback: { kind: 'quad', body: '#1a1a1a', wide: true, headR: 13, ear: 'nub', tail: 'stub', legs: 0.8 } },
   face:     { kind: 'sprite', img: 'face', attackImg: 'faceAtk', attackHeight: 1.22, src: 'assets/face_cut.png', height: 70, fallback: { kind: 'blobcat', body: '#ffffff' } },
   // attackImg: shown while attacking; attackHeight is its height relative to the normal picture.
   yaongma:  { kind: 'sprite', img: 'yaongma', attackImg: 'yaongmaAtk', attackHeight: 1.079, src: 'assets/yaongma_cut.png', height: 90,
@@ -623,7 +692,7 @@ const CAPSULE_COLORS = {
   C: '#3aa0ff', R: '#ffae00', E: '#b040e0',
   L: 'linear-gradient(90deg, #ff5a5a, #ffc93a, #5ad86a, #3aa0ff, #b040e0)',
 };
-const RARITY_RATES = [['L', 2], ['E', 8], ['R', 30], ['C', 60]];
+const RARITY_RATES = [['L', 0.3], ['E', 8], ['R', 30], ['C', 61.7]];
 const MAX_LEVEL = 20;
 function levelCost(lv) { return 60 * lv; }
 const MAX_SQUAD = 10;
@@ -633,10 +702,13 @@ const MAXED_DUPE_REFUND = 20;
 // Tickets: 레어 티켓 = one rare capsule, 플래티넘 티켓 = one capsule with 울트라슈퍼레어 or better.
 const PLAT_RATES = [['L', 20], ['E', 80]];
 const TICKET_NAMES = { rare: '레어 티켓', plat: '플래티넘 티켓' };
+// Each icon gets its own gradient id: a shared id breaks when the first copy sits inside a hidden element.
+let ticketSvgN = 0;
 function ticketSvg(kind) {
   const [a, b] = kind === 'plat' ? ['#f4fbff', '#8fb0d4'] : ['#ffe98a', '#f0a800'];
-  return `<svg viewBox="0 0 34 22"><defs><linearGradient id="tg${kind}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${a}"/><stop offset="1" stop-color="${b}"/></linearGradient></defs>
-    <path d="M2 2h30v6a3 3 0 0 0 0 6v6H2v-6a3 3 0 0 0 0-6z" fill="url(#tg${kind})" stroke="#111" stroke-width="2" stroke-linejoin="round"/>
+  const gid = `tg${kind}${ticketSvgN++}`;
+  return `<svg viewBox="0 0 34 22"><defs><linearGradient id="${gid}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${a}"/><stop offset="1" stop-color="${b}"/></linearGradient></defs>
+    <path d="M2 2h30v6a3 3 0 0 0 0 6v6H2v-6a3 3 0 0 0 0-6z" fill="url(#${gid})" stroke="#111" stroke-width="2" stroke-linejoin="round"/>
     <path d="M23 3v16" stroke="#111" stroke-width="1.2" stroke-dasharray="2 2"/>
     <g fill="#111"><ellipse cx="12.5" cy="13" rx="3.4" ry="2.8"/><circle cx="8.6" cy="8.8" r="1.4"/><circle cx="11.2" cy="7.2" r="1.4"/><circle cx="13.8" cy="7.2" r="1.4"/><circle cx="16.4" cy="8.8" r="1.4"/></g></svg>`;
 }
@@ -1402,15 +1474,19 @@ function drawCatBase(c, x, g, shake) {
 
 // ---- Portraits (for cards and slots) ----
 const portraitCache = {};
-function portrait(id) {
+// scale: draw bigger so it stays sharp when shown large (the gacha banner)
+function portrait(id, scale = 1) {
   if (UNIT_LOOKS[id].kind === 'sprite') return UNIT_LOOKS[id].src;
-  if (!portraitCache[id]) {
+  const key = `${id}@${scale}`;
+  if (!portraitCache[key]) {
     const pc = document.createElement('canvas');
-    pc.width = pc.height = 96;
-    drawCritter(pc.getContext('2d'), 50, 88, 62, UNIT_LOOKS[id], 0, -1, false);
-    portraitCache[id] = pc.toDataURL();
+    pc.width = pc.height = 96 * scale;
+    const c = pc.getContext('2d');
+    c.scale(scale, scale);
+    drawCritter(c, 50, 88, 62, UNIT_LOOKS[id], 0, -1, false);
+    portraitCache[key] = pc.toDataURL();
   }
-  return portraitCache[id];
+  return portraitCache[key];
 }
 
 // ---- Screens ----
@@ -1428,7 +1504,9 @@ function showScreen(name) {
   }
   activeScreen = name;
   document.body.classList.toggle('inBattle', name === 'gameScreen');
+  document.body.classList.toggle('onGacha', name === 'gacha');
   for (const s of SCREENS) $(s).classList.toggle('active', s === name);
+  if (name === 'gacha') { renderGachaBanner(); tickGachaTimer(); }
   ({ lobby: renderLobby, stageSelect: renderStageSelect, gacha: renderGacha, collection: renderCollection, power: renderPower })[name]?.();
   renderBones();
 }
@@ -1649,19 +1727,81 @@ function toggleSquad(id) {
 // ---- Gacha ----
 
 let cranking = false;
-function renderGacha() {
-  const rates = list => list.map(([r, pct]) => `<span class="r${r}">${RARITY_NAMES[r]} ${pct}%</span>`).join('');
-  $('gachaRates').innerHTML = rates(RARITY_RATES);
-  $('platRates').innerHTML = rates(PLAT_RATES);
-  $('pull1').disabled = cranking || save.bones < PULL_COST;
-  $('pull10').disabled = cranking || save.bones < PULL10_COST;
-  $('pullT1').disabled = cranking || save.tickets.rare < 1;
-  $('pullT1Sub').innerHTML = `<span class="tk" style="margin:0">${ticketSvg('rare')}${save.tickets.rare}장</span>`;
-  $('pullT10').style.display = save.tickets.rare >= 10 ? '' : 'none';
-  $('pullT10').disabled = cranking;
-  $('pullPlat').disabled = cranking || save.tickets.plat < 1;
-  $('pullPlatSub').innerHTML = `<span class="tk" style="margin:0">${ticketSvg('plat')}${save.tickets.plat}장</span>`;
+// The two capsule banners; the yellow arrows flip between them like the real capsule screen.
+const GACHA_BANNERS = [
+  // feature: rarity -> the one unit that rarity always gives on this banner (쿠마 = 곰선생); other rarities roll normally
+  { id: 'rare', tab: '레어 뽑기', kicker: '레어 캡슐', name: '쿠마에 역습', sub: '레전드레어 블랙 쿠마 · 울트라슈퍼레어 곰선생!', rates: RARITY_RATES, pool: ['R', 'C'], feature: { L: 'blackBear', E: 'bear' },
+    ticker: '★ 쿠마에 역습! 레전드레어는 블랙 쿠마, 울트라슈퍼레어는 곰선생! ★ 10회 뽑기는 슈퍼레어 이상 1마리 확정! ★ 레어 티켓이 있으면 티켓을 먼저 사용! ★ 이미 있는 멍멍이가 나오면 레벨업! ★' },
+  { id: 'plat', tab: '플래티넘 뽑기', kicker: '플래티넘 캡슐', name: '플래티넘 축제', sub: '울트라슈퍼레어 이상 확정!', rates: PLAT_RATES, pool: ['L', 'E'],
+    ticker: '★ 플래티넘 티켓 1장으로 울트라슈퍼레어 이상 확정! ★ 플래티넘 티켓은 각 챕터 마지막 스테이지 첫 클리어 보상 ★ 보스 러시 첫 클리어도 플래티넘 티켓! ★' },
+];
+let gachaBanner = 0;
+// banner collage slots, back to front: [left %, height %]
+const BANNER_SLOTS = [[7, 52], [93, 52], [20, 64], [80, 64], [33, 76], [67, 76], [50, 92]];
+const BANNER_FILL = [6, 4, 5, 2, 3, 0, 1];  // slot for the best unit, the 2nd best, ...
+const RARITY_ORDER = ['L', 'E', 'R', 'C', 'N', 'X'];
+
+function renderGachaBanner() {
+  const bn = GACHA_BANNERS[gachaBanner];
+  $('gBanner').classList.toggle('plat', bn.id === 'plat');
+  $('gTitleTab').textContent = bn.tab;
+  $('gKicker').textContent = bn.kicker;
+  $('gName').textContent = bn.name;
+  $('gSub').textContent = bn.sub;
+  $('gTickerText').textContent = bn.ticker;
+  $('gRates').innerHTML = bn.rates.map(([r, pct]) =>
+    `<span class="r${r}">${RARITY_NAMES[r]}${bn.feature?.[r] ? `(${UNIT_TYPES[bn.feature[r]].name})` : ''} ${pct}%</span>`).join('');
+  $('gDots').innerHTML = GACHA_BANNERS.map((_, i) => `<i data-i="${i}"${i === gachaBanner ? ' class="on"' : ''}></i>`).join('');
+  // featured units take the front-center slots
+  const ids = [...Object.values(bn.feature || {}), ...Object.keys(UNIT_TYPES).filter(id => !UNIT_TYPES[id].starter && !UNIT_TYPES[id].unlock && bn.pool.includes(UNIT_TYPES[id].rarity))
+    .sort((x, y) => RARITY_ORDER.indexOf(UNIT_TYPES[x].rarity) - RARITY_ORDER.indexOf(UNIT_TYPES[y].rarity))].slice(0, BANNER_SLOTS.length);
+  $('gArt').innerHTML = ids.map((id, i) => {
+    const slot = BANNER_FILL[i];
+    const [x, h] = BANNER_SLOTS[slot];
+    const star = bn.feature && i < Object.keys(bn.feature).length;  // featured units: bigger and in front, best first
+    return `<img src="${portrait(id, 3)}" alt="" style="left:${x}%;height:${star ? 100 - i * 12 : h}%;max-width:${star ? 40 : 34}%;z-index:${star ? 15 - i : slot}">`;
+  }).join('');
 }
+
+function renderGacha() {
+  const rare = save.tickets.rare, plat = save.tickets.plat;
+  const tkCost = (kind, n) => `${ticketSvg(kind)}${n}`;
+  if (GACHA_BANNERS[gachaBanner].id === 'plat') {
+    $('pull1').disabled = cranking || plat < 1;
+    $('pull1Cost').innerHTML = tkCost('plat', 1);
+    $('pull10').classList.add('hide');
+  } else {
+    // tickets are used first, then bones
+    $('pull10').classList.remove('hide');
+    $('pull1').disabled = cranking || (rare < 1 && save.bones < PULL_COST);
+    $('pull1Cost').innerHTML = rare >= 1 ? tkCost('rare', 1) : `🦴${PULL_COST}`;
+    $('pull10').disabled = cranking || (rare < 10 && save.bones < PULL10_COST);
+    $('pull10Cost').innerHTML = rare >= 10 ? tkCost('rare', 10) : `🦴${PULL10_COST}`;
+  }
+  $('gBones').textContent = save.bones;
+  $('gFoot').innerHTML = `<span class="tk">${ticketSvg('rare')}${rare}</span><span class="tk">${ticketSvg('plat')}${plat}</span><span class="bn">🦴 ${save.bones}</span>`;
+}
+
+function flipBanner(d) {
+  if (cranking) return;
+  gachaBanner = (gachaBanner + d + GACHA_BANNERS.length) % GACHA_BANNERS.length;
+  renderGachaBanner();
+  renderGacha();
+}
+$('gPrev').onclick = () => flipBanner(-1);
+$('gNext').onclick = () => flipBanner(1);
+$('gDots').onclick = e => { const i = e.target.dataset?.i; if (i != null) flipBanner(+i - gachaBanner); };
+$('gStorage').onclick = () => showScreen('collection');
+
+// 남은시간: counts down to midnight, just for the look
+function tickGachaTimer() {
+  if (activeScreen !== 'gacha') return;
+  const now = new Date(), end = new Date(now);
+  end.setHours(24, 0, 0, 0);
+  const t = Math.floor((end - now) / 1000);
+  $('gTime').textContent = `${Math.floor(t / 3600)}시간 ${String(Math.floor(t / 60) % 60).padStart(2, '0')}분 ${String(t % 60).padStart(2, '0')}초`;
+}
+setInterval(tickGachaTimer, 1000);
 
 function rollRarity(table = RARITY_RATES) {
   let roll = Math.random() * 100;
@@ -1678,7 +1818,8 @@ function rollUnit(rarity) {
 }
 
 // pay: 'bones', 'rare' or 'plat' (tickets).
-function pull(count, cost, pay = 'bones') {
+// feature: { rarity: unitId } — that rarity always gives that unit (e.g. 쿠마에 역습's 울트라슈퍼레어 = 곰선생).
+function pull(count, cost, pay = 'bones', feature = null) {
   const wallet = pay === 'bones' ? save.bones : save.tickets[pay];
   if (cranking || wallet < cost) return;
   if (pay === 'bones') save.bones -= cost; else save.tickets[pay] -= cost;
@@ -1687,7 +1828,7 @@ function pull(count, cost, pay = 'bones') {
   if (count === 10 && rarities.every(r => r === 'C')) rarities[9] = 'R';
 
   const results = rarities.map(r => {
-    const id = rollUnit(r);
+    const id = feature?.[r] || rollUnit(r);
     let badge;
     if (!save.owned[id]) {
       save.owned[id] = 1;
@@ -1706,7 +1847,7 @@ function pull(count, cost, pay = 'bones') {
   renderBones();
   $('gachaResults').innerHTML = '';
   // the gold 멍뭉이 shakes, then the capsule drops
-  const machine = $(pay === 'plat' ? 'platMachine' : 'rareMachine');
+  const machine = $('gBanner');
   cranking = true;
   machine.classList.add('cranking');
   renderGacha();
@@ -1717,11 +1858,16 @@ function pull(count, cost, pay = 'bones') {
     startReveal(results, pay);
   }, 800);
 }
-$('pull1').onclick = () => pull(1, PULL_COST);
-$('pull10').onclick = () => pull(10, PULL10_COST);
-$('pullT1').onclick = () => pull(1, 1, 'rare');
-$('pullT10').onclick = () => pull(10, 10, 'rare');
-$('pullPlat').onclick = () => pull(1, 1, 'plat');
+$('pull1').onclick = () => {
+  const bn = GACHA_BANNERS[gachaBanner];
+  if (bn.id === 'plat') pull(1, 1, 'plat');
+  else if (save.tickets.rare >= 1) pull(1, 1, 'rare', bn.feature);
+  else pull(1, PULL_COST, 'bones', bn.feature);
+};
+$('pull10').onclick = () => {
+  const feature = GACHA_BANNERS[gachaBanner].feature;
+  save.tickets.rare >= 10 ? pull(10, 10, 'rare', feature) : pull(10, PULL10_COST, 'bones', feature);
+};
 
 // Gold 멍뭉이 capsule: the picture in two halves that fly apart when it opens.
 const CAPSULE_HTML = '<div class="capTop"></div><div class="capBot"></div>';
@@ -2110,8 +2256,12 @@ function fireCannon() {
 }
 $('cannonBtn').onclick = fireCannon;
 
+const HIT_FLASH = 0.18;  // seconds a unit glows red and shakes after being hit
+
 // Knock a unit back each time its HP crosses a threshold (or always, when forced).
 function damage(u, amount, forceKb) {
+  u.hitT = HIT_FLASH;
+  if (u.side === 'player') effects.push({ type: 'text', text: `-${Math.round(amount)}`, x: u.x + (Math.random() - 0.5) * 14, y: LANE_Y - u.size * 1.5 - u.fly, t: 0.7, max: 0.7, px: 18, color: '#ff4a3a', rise: 26 });
   const step = u.maxHp / (u.kb + 1);
   const before = Math.ceil(u.hp / step);
   u.hp -= amount;
@@ -2161,7 +2311,9 @@ function hit(attacker, found) {
     damage(found.entity, attacker.atk);
   }
   if (attacker.range > 50) effects.push({ type: 'shot', x1: attacker.x, y1: LANE_Y - attacker.size * 0.7, x2: tx, y2: ty, t: 0.12, max: 0.12 });
-  effects.push({ type: 'spark', x: tx, y: ty, t: 0.2, max: 0.2 });
+  effects.push(attacker.side === 'enemy'
+    ? { type: 'impact', x: tx, y: ty, t: 0.28, max: 0.28 }
+    : { type: 'spark', x: tx, y: ty, t: 0.2, max: 0.2 });
 }
 
 function update(dt) {
@@ -2188,6 +2340,7 @@ function update(dt) {
 
   for (const unit of units) {
     if (unit.state === 'dead') continue;
+    if (unit.hitT > 0) unit.hitT -= dt;
 
     if (unit.kbT > 0) {
       unit.kbT -= dt;
@@ -2933,7 +3086,8 @@ function drawUnit(u) {
   const facing = DIR[u.side];
   let x = u.x;
   let y = LANE_Y + u.yOff;
-  if (u.atkAnim > 0) x += facing * Math.sin(Math.PI * (1 - u.atkAnim / 0.25)) * 8;
+  if (u.atkAnim > 0) x += facing * Math.sin(Math.PI * (1 - u.atkAnim / 0.25)) * (u.side === 'enemy' ? 16 : 8);
+  if (u.hitT > 0) x += Math.sin(u.hitT * 90) * 3;
   if (u.kbT > 0) y -= Math.sin(Math.PI * (1 - u.kbT / KB_TIME)) * 22;
   const drawSize = u.size * 1.45;
   y -= u.fly;
@@ -2947,7 +3101,13 @@ function drawUnit(u) {
     ctx.beginPath(); ctx.arc(x, y - drawSize * 0.45, drawSize * 0.75, 0, Math.PI * 2); ctx.fill();
   }
   const attacking = u.kbT <= 0 && u.state === 'attack' && u.atkTimer > u.atkCooldown - 0.6;
+  if (u.hitT > 0) {
+    ctx.save();
+    ctx.shadowColor = `rgba(255,40,30,${Math.min(1, u.hitT / HIT_FLASH * 1.5)})`;
+    ctx.shadowBlur = 16;
+  }
   drawCritter(ctx, x, y, drawSize, u.look, u.anim, facing, u.state === 'walk' && u.kbT <= 0, attacking);
+  if (u.hitT > 0) ctx.restore();
   if (u.rarity && u.rarity !== 'N') outlinedText(ctx, RARITY_NAMES[u.rarity], x, y - drawSize * 1.1 - 6, 13, RARITY_COLORS[u.rarity]);
 }
 
@@ -2965,6 +3125,22 @@ function drawEffect(e) {
     }
     ctx.stroke();
     ctx.strokeStyle = '#ffe25a'; ctx.lineWidth = 1.5; ctx.stroke();
+  } else if (e.type === 'impact') {
+    // cat hit: jagged red/orange star that pops out and fades
+    const r = 10 + Math.min(1, p * 3) * 14;
+    ctx.globalAlpha = 1 - p * p;
+    ctx.translate(e.x, e.y);
+    ctx.rotate(e.x * 0.37);
+    for (const [k, col] of [[1, '#ff3a1a'], [0.55, '#ffd23a']]) {
+      ctx.beginPath();
+      for (let a = 0; a < 16; a++) {
+        const rr = (a % 2 ? r * 0.45 : r) * k, ang = a * Math.PI / 8;
+        ctx.lineTo(Math.cos(ang) * rr, Math.sin(ang) * rr);
+      }
+      ctx.closePath();
+      ctx.fillStyle = col; ctx.fill();
+      ctx.strokeStyle = OUT; ctx.lineWidth = 2; ctx.stroke();
+    }
   } else if (e.type === 'shot') {
     ctx.globalAlpha = 1 - p;
     ctx.strokeStyle = '#ffe25a'; ctx.lineWidth = 3;
