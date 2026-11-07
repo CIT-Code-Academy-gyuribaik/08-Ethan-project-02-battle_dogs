@@ -1,1 +1,3 @@
-<img width="1709" height="979" alt="스크린샷 2026-10-03 오후 12 55 09" src="https://github.com/user-attachments/assets/620e5f9c-22a9-40ce-9604-7d91aef640d4" />
+<img width="1038" height="597" alt="image" src="https://github.com/user-attachments/assets/56f4fdc4-506a-44dd-8dc9-929b934f1372" />
+<img width="1200" height="697" alt="image" src="https://github.com/user-attachments/assets/2c26cf33-91b9-4a33-85fd-58c58c88cce1" />
+
